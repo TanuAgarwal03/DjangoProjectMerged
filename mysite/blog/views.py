@@ -1,10 +1,15 @@
-from django.shortcuts import render , get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from .models import Post
 from .forms import PostForm
 from django.shortcuts import redirect
+from django.conf import settings
+# from django.contrib.auth.backends import BaseBackend
+# from django.contrib.auth.hashers import check_password
+# from django.contrib.auth.models import User
+# from django.contrib.auth.models import AbstractUser
 
-# Create your views here.
+
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
     return render(request , 'blog/post_list.html' , {'posts' :posts})
@@ -40,6 +45,3 @@ def post_edit(request, pk):
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
 
-
-
-# Create your views here.
