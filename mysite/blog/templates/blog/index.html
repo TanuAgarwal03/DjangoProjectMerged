@@ -1,0 +1,7 @@
+{% if tag_name %}
+<h1>Tag: {{tag_name}}</h1>
+{% elif category_name %}
+<h1>Category: {{category_name}}</h1>
+{% else %}
+<h1>All Posts</h1>
+{% endif %}
