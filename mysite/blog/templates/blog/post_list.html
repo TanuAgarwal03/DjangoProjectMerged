@@ -2,6 +2,9 @@
 {% extends 'blog/base.html' %}
 {% load static %}
 {% block content %}
+<head>
+    <title>Django Girls Blog</title>
+</head>
 {% for post in posts %}
     <article class="post">
         <time class="date">

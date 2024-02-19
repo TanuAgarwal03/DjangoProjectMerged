@@ -2,14 +2,42 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from .models import Post
 from .forms import PostForm
+from django.contrib.auth import logout
+
+from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.conf import settings
-# from .models import Tag
-# from django.contrib.auth.backends import BaseBackend
-# from django.contrib.auth.hashers import check_password
-# from django.contrib.auth.models import User
-# from django.contrib.auth.models import AbstractUser
+from .forms import CustomUserCreationForm 
+from django.contrib.auth.forms import AuthenticationForm
+from .models import User
+from .forms import CustomUserChangeForm
 
+def signup_view(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('blog:login')
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'blog/signup.html', {'form': form})
+
+def login_view(request):
+    if request.method =='POST':
+        form = AuthenticationForm(request ,request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('blog:post_list')            
+    else:
+        form = AuthenticationForm()
+    return render(request , 'blog/login.html', {'form' :form})
+
+def logout_view(request):
+    logout(request)
+    return redirect('blog:post_list')  
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date') 
@@ -18,9 +46,6 @@ def post_list(request):
 
 def uploadok(request):
     return HttpResponse('upload successful')
-
-
-
 
 def post_detail(request,slug):
     post = get_object_or_404(Post, slug=slug)
@@ -55,6 +80,21 @@ def post_edit(request, slug):
         form = PostForm(instance=post) 
     return render(request, 'blog/post_edit.html', {'form': form})
 
+def edit_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST,request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('blog:user_detail'  ,username=user.username) 
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+    return render(request, 'blog/edit_profile.html', {'form': form})
+
+def user_detail(request, username):
+    user = get_object_or_404(User,username=username)
+    return render(request, 'blog/userdetails.html', {'user': user})
+
 def list_posts_by_category(request, slug):
     category = get_object_or_404(Category, slug=slug)
     posts = Post.objects.filter(category=category)
@@ -66,3 +106,10 @@ def list_posts_by_tag( request , slug):
     posts = Post.objects.filter(tags =tag)
     context ={'tag':tag,'posts' :posts,}
     return render(request , "home.html" ,context)
+
+def index(request):
+    return render(request, 'index.html')
+
+
+
+    

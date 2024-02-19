@@ -16,6 +16,12 @@ urlpatterns = [
     path('post/<slug:slug>/' , views.post_detail , name = 'post_detail'),
     path('success/', views.uploadok, name= 'success'),
     path('', views.post_list, name='post_list'),
+    path('index/',views.index, name='home'),
+    path('login/', views.login_view , name='login'),
+    path('signup/', views.signup_view, name='signup'),
+    path('logout/', views.logout_view,name='logout'),
+    path('user<str:username>/' ,views.user_detail,name='user_detail'),
+    path('edit_profile/' ,views.edit_profile,name='edit_profile'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

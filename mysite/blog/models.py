@@ -4,13 +4,119 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 from autoslug import AutoSlugField
 from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _  
+from django.utils.translation import gettext_lazy as _ 
+from django.utils.html import mark_safe
+
+
+Gender_choices=[
+    ('M', 'Male'),
+    ('F','Female'),
+]
+
+Country_choices=[
+    ('CN', 'China'),
+    ('IN', 'India'),
+    ('US', 'United States'),
+    ('ID', 'Indonesia'),
+    ('PK', 'Pakistan'),
+    ('BR', 'Brazil'),
+    ('NG', 'Nigeria'),
+    ('BD', 'Bangladesh'),
+    ('RU', 'Russia'),
+    ('MX', 'Mexico'),
+    ('JP', 'Japan'),
+    ('ET', 'Ethiopia'),
+    ('PH', 'Philippines'),
+    ('EG', 'Egypt'),
+    ('VN', 'Vietnam'),
+    ('CD', 'Democratic Republic of the Congo'),
+    ('TR', 'Turkey'),
+    ('IR', 'Iran'),
+    ('DE', 'Germany'),
+    ('TH', 'Thailand'),
+    ('GB', 'United Kingdom'),
+    ('FR', 'France'),
+    ('IT', 'Italy'),
+    ('TZ', 'Tanzania'),
+    ('ZA', 'South Africa'),
+    ('KR', 'South Korea'),
+    ('CO', 'Colombia'),
+    ('KE', 'Kenya'),
+    ('AR', 'Argentina'),
+    ('UA', 'Ukraine'),
+    ('SD', 'Sudan'),
+    ('PL', 'Poland'),
+    ('DZ', 'Algeria'),
+    ('CA', 'Canada'),
+    ('UG', 'Uganda'),
+    ('MA', 'Morocco'),
+    ('PE', 'Peru'),
+    ('IQ', 'Iraq'),
+    ('SA', 'Saudi Arabia'),
+    ('UZ', 'Uzbekistan'),
+    ('MY', 'Malaysia'),
+    ('VE', 'Venezuela'),
+    ('AF', 'Afghanistan'),
+    ('GH', 'Ghana'),
+    ('NP', 'Nepal'),
+    ('YE', 'Yemen'),
+    ('KP', 'North Korea'),
+    ('MG', 'Madagascar'),
+    ('CM', 'Cameroon'),
+    ('CI', 'Ivory Coast'),
+    ('AU', 'Australia'),
+    ('NE', 'Niger'),
+    ('TW', 'Taiwan'),
+    ('LK', 'Sri Lanka'),
+    ('BF', 'Burkina Faso'),
+    ('ML', 'Mali'),
+    ('RO', 'Romania'),
+    ('MW', 'Malawi'),
+    ('CL', 'Chile'),
+    ('KZ', 'Kazakhstan'),
+    ('ZM', 'Zambia'),
+    ('GT', 'Guatemala'),
+    ('EC', 'Ecuador'),
+    ('SY', 'Syria'),
+    ('NL', 'Netherlands'),
+    ('SN', 'Senegal'),
+    ('KP', 'Cambodia'),
+    ('TD', 'Chad'),
+    ('SO', 'Somalia'),
+    ('ZW', 'Zimbabwe'),
+    ('RW', 'Rwanda'),
+    ('GN', 'Guinea'),
+    ('BJ', 'Benin'),
+    ('TN', 'Tunisia'),
+    ('BE', 'Belgium'),
+    ('CU', 'Cuba'),
+    ('BO', 'Bolivia'),
+    ('HT', 'Haiti'),
+    ('GR', 'Greece'),
+    ('DO', 'Dominican Republic'),
+    ('CZ', 'Czech Republic'),
+    ('PT', 'Portugal'),
+    ('SV', 'El Salvador'),
+    ('HN', 'Honduras'),
+]
+
+
 
 class User(AbstractUser):
-   country = models.CharField(max_length=30 , blank=True)
+   gender = models.CharField(max_length=1,choices= Gender_choices ,blank=True)
+   country = models.CharField(max_length=2 ,choices= Country_choices, blank=True,default= 'IN')
    dob = models.DateField(null=False, blank=False, default=timezone.now)
    state = models.CharField(max_length=20 , blank= True)
-   image= models.ImageField(upload_to=None , height_field=None, width_field=None , blank=True , default=None)
+   image= models.ImageField(upload_to='profile_images/'  , blank=True , default=None)
+
+   def __str__(self):
+       return self.username
+
+   def image_preview(self):
+       return mark_safe('<img src = "{url}" width = "50"/>'.format(
+        url = self.image.url))
+
+
 
 class Category(models.Model):
     
@@ -38,39 +144,11 @@ class Post(models.Model): #object
     thumbnails = models.ImageField(upload_to='thumbnails/', default=None)
     featured_image = models.ImageField(upload_to='uploads/', default= None)
     tag = models.ManyToManyField(Tag,  blank= True)
+    
 
     def __str__(self):
         return self.title
 
-#  def save(self, **kwargs):
-    #     try:
-    #         kwargs['force_insert'] = True
-    #         im = Image.open(self.post_content)
-
-    #         output = BytesIO()
-    #         output1= BytesIO()
-
-    #         img = Image.open(self.post_content)
-
-    #         if img.height > 300 or img.width >300 :
-    #             output_size =(300,169)   
-    #             img.thumbnail(output_size)
-    #             img.save(output1, format = 'JPEG' , quality=90)
-            
-    #         im = im.resize((400,250))
-
-    #         im.save(output, format='JPEG' , quality=90)
-    #         output.seek(0)
-    #         unique_id =get_random_string(length=32)
-
-    #         self.post_content = InMemoryUploadedFile(output, 'ImageField' , "%s.jpg" % unique_id, 'image.jpeg', sys.getsizeof(output1), None)
-
-    #         super(Post , self).save()
-    #     except:
-    #         super(Post , self).save()
-    # def publish(self):
-    #     self.published_date = timezone.now()
-    #     self.save()
 
 
 

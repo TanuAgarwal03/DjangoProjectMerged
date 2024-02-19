@@ -1,0 +1,47 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="w-50 container d-flex justify-content-between  m-auto">
+    <div class=" m-auto">
+        <h4>User Profile : <u>{{ user.username }}</u></h4>
+        
+        {% if user.image %}
+        <div class = "rounded-2">
+            {{ user.image_preview }}
+        </div>
+        {% endif %}
+
+        {% if user.email %}
+        <p>Email: {{ user.email }}</p>
+        {% endif %}
+
+        {% if user.phone %}
+        <p>Phone: {{ user.phone }}</p>
+        {% endif %}
+
+        {% if user.first_name %}
+        <p>First Name: {{ user.first_name }}</p>
+        {% endif %}
+
+        {% if user.last_name %}
+        <p>Last Name: {{ user.last_name }}</p>
+        {% endif %}
+        
+        {% if user.dob %}
+        <p>Date of Birth: {{ user.dob }}</p>
+        {% endif %}
+
+        {% if user.state %}
+        <p>State: {{ user.state }}</p>
+        {% endif %}
+
+        {% if user.country %}
+        <p>Country: {{ user.country }}</p>
+        {% endif %}
+
+        
+
+        <a href="{% url 'blog:edit_profile' %}" class="btn btn-primary">Edit</a>
+    </div>
+</div>
+{% endblock %}
