@@ -1,16 +1,17 @@
 from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from .models import Post
-from .forms import PostForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
-
 from django.contrib.auth import login
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.conf import settings
 from .forms import CustomUserCreationForm 
-from django.contrib.auth.forms import AuthenticationForm
-from .models import User
 from .forms import CustomUserChangeForm
+from .forms import PostForm
+from .forms import CommentForm
+from .models import Comment
+from .models import Post
+from .models import User
 
 def signup_view(request):
     if request.method == 'POST':
@@ -21,7 +22,6 @@ def signup_view(request):
             return redirect('blog:login')
     else:
         form = CustomUserCreationForm()
-
     return render(request, 'blog/signup.html', {'form': form})
 
 def login_view(request):
@@ -49,7 +49,21 @@ def uploadok(request):
 
 def post_detail(request,slug):
     post = get_object_or_404(Post, slug=slug)
-    return render(request, 'blog/post_detail.html', {'post': post})
+    comments = post.comments.filter(active=True)
+    print("------")
+    print(comments)
+    print("------")
+    new_comment = None
+    if request.method == 'POST':
+        comment_form = CommentForm(data = request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.post=post
+            new_comment.save()
+            return redirect('blog:post_detail' , slug = slug)
+    else:
+        comment_form =CommentForm()
+    return render(request, 'blog/post_detail.html', {'post': post ,'new_comment' : new_comment ,'comments':comments , 'comment_form' : comment_form})
 
 def post_new(request):
     if request.method == "POST":

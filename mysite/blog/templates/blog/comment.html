@@ -1,0 +1,44 @@
+<div class="border-0 border-start border-2 ps-2" id="{{comment.id}}">
+    <div class="mt-3">
+        <strong>{{comment.name}}</strong>
+        {% if comment.parent %}
+        to <strong>{{comment.parent.name}}</strong>
+        {% endif %}
+        <small class="text-muted">On {{ comment.created|timesince }}</small>
+    </div>
+    <div class="border p-2 rounded">
+        <p>{{comment.body}}</p>
+        {% if not comment.parent %}
+        <button class="btn btn-primary btn-sm" onclick="handleReply({{comment.id}})">Reply</button>
+        <div id="reply-form-container-{{comment.id}}" class="d-none">
+            <form method="post" action="{% url 'blog:reply' %}" class="mt-3">
+                {% csrf_token %}
+                <input type="hidden" name="post_id" value="{{post.id}}">
+                <input type="hidden" name="parent" value="{{comment.id}}">
+                <input type="hidden" name="post_url" value="{{post.get_absolute_url}}">
+                {{comment_form.as_p}}
+                <div>
+                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% for child_comment in comment.get_comments %}
+    {% include 'blog/comment.html' with comment=child_comment %}
+    {% endfor %}
+</div>
+<script>
+    function handleReply(response_id) {
+        const reply_form_container = document.querySelector(`#reply-form-container-${response_id}`);
+        if (reply_form_container && !reply_form_container.getAttribute("data-is-reply")) {
+            if (reply_form_container.classList.contains('d-none')) {
+                reply_form_container.classList.remove('d-none');
+                reply_form_container.classList.add('d-block');
+                } else {
+                    reply_form_container.classList.remove('d-block');
+                    reply_form_container.classList.add('d-none');
+                }
+                        }
+    }
+</script>

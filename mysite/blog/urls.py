@@ -20,6 +20,7 @@ urlpatterns = [
     path('login/', views.login_view , name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view,name='logout'),
+    #   path('comment/reply/', views.reply_page, name="reply"),
     path('user<str:username>/' ,views.user_detail,name='user_detail'),
     path('edit_profile/' ,views.edit_profile,name='edit_profile'),
 ]
