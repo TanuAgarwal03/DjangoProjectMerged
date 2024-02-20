@@ -6,9 +6,6 @@ from .views import *
 app_name='blog'
 
 urlpatterns = [
-    # path("<slug:slug>", views.post_detail, name="post_detail"),
-    # path("<slug:slug>/edit", views.post_edit, name="edit"),
-    # path("<slug:slug>/post_list", views.post_list, name="post_list"),
     path('post/<slug:slug>/edit/' , views.post_edit , name= 'post_edit'),
     path('post/new/', views.post_new, name='post_new'),
     path("tag/<int:tag_id>", views.list_posts_by_tag, name="tag"),
@@ -20,9 +17,9 @@ urlpatterns = [
     path('login/', views.login_view , name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view,name='logout'),
-    #   path('comment/reply/', views.reply_page, name="reply"),
     path('user<str:username>/' ,views.user_detail,name='user_detail'),
     path('edit_profile/' ,views.edit_profile,name='edit_profile'),
+    path('comment/reply/', views.reply_comment, name="reply"),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

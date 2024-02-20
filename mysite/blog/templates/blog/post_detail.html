@@ -26,44 +26,45 @@
         <br>
 
         <h5>Add comment</h5>
-
+        
         <form method="post" action="">
             {% csrf_token %}
             <div id="commentForm" class="d-none">
                 {{ comment_form.as_p }}
             </div>
+            
             <button type="submit" class="btn btn-primary" onclick="showCommentBox()">Comment</button>
         </form>
 
         {% with comments.count as total_comments %}
-            {% if not post.comments.all %}
-                No comments yet
-            {% else %}
-                {% for comment in post.get_comments %}
-                    <strong>
-                        {{ comment.name }}<br>
-                    </strong>
-                    {% include './icons/pencil-fill.svg' %}
-                        {{ comment.created }}
-                    <br>
-                    {{ comment.body }}
-                    <br><br>
-                {% endfor %}
-            {% endif %}
+
         {% endwith %}
-
-        <script>
-            const showCommentBox = () => {
-                const form = document.querySelector('#commentForm');
-                if (form.classList.contains('d-none')) {
-                    form.classList.remove('d-none');
-                    form.classList.add('d-block');
-                } else {
-                    form.classList.remove('d-block');
-                    form.classList.add('d-none');
-                }
-            }
-        </script>
-
+        {% if not post.comments.all %}
+        No comments yet
+        {% else %}
+        {% for comment in post.get_comments %}
+        {% include 'blog/comment.html' with comment=comment %}
+          
+              {% for reply in comment.reply_set.all %}
+                <div class="reply">
+                  <p>{{reply.user.username}} replied {{ reply.text }}</p>
+                  </div>
+                  {% endfor %}
+                    
+                  {% comment %} <button type="submit" class="btn btn-primary" onclick="replyForm()">Reply</button> {% endcomment %}
+                  <div >
+                  <form method="post" class="d-none" id="reply_form" action="{%url 'blog:reply'%}">
+                      {{ comment_form.as_p }}
+                      {% csrf_token %}
+                      <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                      <button type="submit">submit</button>
+                    </form>
+                      <br><br>
+                 </div>
+            
+          {% endfor %}
+        {% endif %}
+   
+        
     </article>
 {% endblock %}

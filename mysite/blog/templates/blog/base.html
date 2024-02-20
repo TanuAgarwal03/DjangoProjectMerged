@@ -39,6 +39,25 @@
                 </div>
             </div>
         </main>
+        <script>
+            const showCommentBox = () => {
+                const form = document.querySelector('#commentForm');
+                if (form.classList.contains('d-none')) {
+                    form.classList.remove('d-none');
+                    form.classList.add('d-block');
+                } else {
+                    form.classList.remove('d-block');
+                    form.classList.add('d-none');
+                }
+            }
+        </script>
+
+        <script>
+          function replyForm(){
+            var element = document.getElementById("reply_form")
+            element.classList.toggle("d-none");
+          }
+        </script>
     </body>
     
 </html>

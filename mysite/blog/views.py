@@ -12,6 +12,7 @@ from .forms import CommentForm
 from .models import Comment
 from .models import Post
 from .models import User
+from django.urls import reverse
 
 def signup_view(request):
     if request.method == 'POST':
@@ -54,6 +55,8 @@ def post_detail(request,slug):
     print(comments)
     print("------")
     new_comment = None
+    
+    
     if request.method == 'POST':
         comment_form = CommentForm(data = request.POST)
         if comment_form.is_valid():
@@ -64,6 +67,22 @@ def post_detail(request,slug):
     else:
         comment_form =CommentForm()
     return render(request, 'blog/post_detail.html', {'post': post ,'new_comment' : new_comment ,'comments':comments , 'comment_form' : comment_form})
+
+
+def reply_comment(request):
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            post_id = request.POST.get('post_id') 
+            parent_id = request.POST.get('parent')  
+            post_url = request.POST.get('post_url')
+            reply = form.save(commit=False)
+            reply.post = Post(id=post_id)
+            reply.parent = Comment(id=parent_id)
+            reply.save()
+            return redirect('blog:post_detail')
+    return redirect("/")
+
 
 def post_new(request):
     if request.method == "POST":

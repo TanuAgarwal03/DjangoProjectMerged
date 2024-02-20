@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.urls import reverse
 from django.contrib.auth.models import AbstractUser
 from autoslug import AutoSlugField
 from django.contrib.auth import get_user_model
@@ -159,16 +160,22 @@ class Comment(models.Model):
     updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
+    
     class Meta:
         ordering = ('-created',)
         
     def __str__(self) :
         return self.name
+        
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
     
     def get_comments(self):
         return Comment.objects.filter(parent=self).filter(active=True)
+
+    def get_absolute_url(self):
+        return reverse('blog:post_detail' ,kwargs={"post_slug": self.post_slug})
+
 
 
 
