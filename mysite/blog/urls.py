@@ -22,6 +22,7 @@ urlpatterns = [
     path('user<str:username>/' ,views.user_detail,name='user_detail'),
     path('edit_profile/' ,views.edit_profile,name='edit_profile'),
     path('comment/reply/', views.reply_comment, name="reply"),
+    # path('export_query_to_csv', views.export_query_to_csv , name='export_query_to_csv'),  x
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

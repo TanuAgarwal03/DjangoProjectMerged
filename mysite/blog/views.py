@@ -14,6 +14,7 @@ from .models import Post
 from .models import User
 from django.urls import reverse
 
+
 def signup_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -156,4 +157,13 @@ def tag_details(request, tag_slug):
     tag_slug = "Tag for: "+tag_slug
     return render(request, 'blog/post_list.html', {'posts': posts,"query":tag_slug})
 
-# def export_csv(request):
+# def export_query_to_csv(request):
+#     data = User.objects.all()
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="user.csv"'
+#     writer = csv.writer(response)
+#     writer.writerow(['dob','image' , 'gender' ,'state','country']) 
+#     user_fields = data.values_list('dob','image' , 'gender' ,'state','country')
+#     for user in data:
+#         writer.writerow([])
+#     return response
