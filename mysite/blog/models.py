@@ -127,7 +127,7 @@ class Category(models.Model):
 
 class Tag(models.Model):
     title= models.CharField(max_length=100,unique=True)
-
+    slug = AutoSlugField(populate_from="title", unique=True, null = True , default=None)
     def __str__(self):
         return self.title
 
@@ -142,14 +142,14 @@ class Post(models.Model): #object
     published_date = models.DateTimeField(blank=True, null=True)
     thumbnails = models.ImageField(upload_to='thumbnails/', default=None)
     featured_image = models.ImageField(upload_to='uploads/', default= None)
-    tag = models.ManyToManyField(Tag,  blank= True)
+    tag = models.ManyToManyField(Tag)
     
     def get_comments(self):
         return Comment.objects.filter(post=self, parent__isnull=True, active=True)
 
     def __str__(self):
         return self.title
-
+    
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
     post = models.ForeignKey(Post,on_delete=models.CASCADE, related_name="comments")
@@ -166,7 +166,7 @@ class Comment(models.Model):
         
     def __str__(self) :
         return self.name
-        
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
     

@@ -7,13 +7,13 @@ from .models import *
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('author', 'title', 'text', 'category', 'tag' ,'thumbnails','featured_image') 
+        fields = ( 'title', 'text', 'category', 'tag' ,'thumbnails','featured_image') 
 
 class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email','password1', 'password2', 'first_name', 'last_name', 'dob','gender','state','country' )
+        fields = ('username', 'email','password1', 'password2', 'first_name', 'last_name', 'dob','gender','state','country','image')
 
 class CustomUserChangeForm(UserChangeForm):
 

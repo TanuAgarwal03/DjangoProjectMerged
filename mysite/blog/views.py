@@ -42,7 +42,10 @@ def logout_view(request):
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date') 
-    print(posts)
+    print("-------------")
+    print(Post.tag)
+    print("-------------")
+
     return render(request,'blog/post_list.html',{'posts' : posts})
 
 def uploadok(request):
@@ -70,17 +73,20 @@ def post_detail(request,slug):
 
 
 def reply_comment(request):
+    # post = get_object_or_404(Post, slug=slug)
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
             post_id = request.POST.get('post_id') 
+            mypost = Post.objects.filter(id=post_id).last()
             parent_id = request.POST.get('parent')  
             post_url = request.POST.get('post_url')
             reply = form.save(commit=False)
             reply.post = Post(id=post_id)
             reply.parent = Comment(id=parent_id)
             reply.save()
-            return redirect('blog:post_detail')
+            # return redirect(post_url+'/#'+str(reply.id))
+            return redirect('blog:post_detail' , slug = mypost.slug)
     return redirect("/")
 
 
@@ -105,7 +111,6 @@ def post_edit(request, slug):
         form = PostForm(request.POST , instance=post) 
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = request.user
             post.published_date = timezone.now()
             post.save()
             return redirect('blog:post_detail', slug= post.slug)
@@ -128,21 +133,27 @@ def user_detail(request, username):
     user = get_object_or_404(User,username=username)
     return render(request, 'blog/userdetails.html', {'user': user})
 
-def list_posts_by_category(request, slug):
-    category = get_object_or_404(Category, slug=slug)
-    posts = Post.objects.filter(category=category)
-    context = {"category_name": category.name, "posts": posts}
-    return render(request, "index.html", context)
-
-def list_posts_by_tag( request , slug):
-    tag = get_object_or_404(Tag,slug=slug)
-    posts = Post.objects.filter(tags =tag)
-    context ={'tag':tag,'posts' :posts,}
-    return render(request , "home.html" ,context)
-
 def index(request):
     return render(request, 'index.html')
 
+def cat_list(request):
+    categories = Category.objects.all()
+    return render(request, 'blog/cat_list.html', {'categories':categories})
 
+def tag_list(request):
+    tag = Tag.objects.all()
+    return render(request, 'blog/tag_list.html', {'tag':tag})
 
-    
+def cat_details(request, category_slug):
+    categories = get_object_or_404(Category, title=category_slug)
+    posts = Post.objects.filter(category=categories)
+    category_slug = "Category for: "+category_slug
+    return render(request, 'blog/post_list.html', {'posts': posts,'categories':categories,"query":category_slug})
+
+def tag_details(request, tag_slug):
+    tag = get_object_or_404(Tag, name=tag_slug)
+    posts = Post.objects.filter(tag=tag)
+    tag_slug = "Tag for: "+tag_slug
+    return render(request, 'blog/post_list.html', {'posts': posts,"query":tag_slug})
+
+# def export_csv(request):

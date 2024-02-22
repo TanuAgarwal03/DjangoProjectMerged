@@ -18,13 +18,22 @@
             <time class="date">
                 {{ post.published_date }}
             </time>
-            <p><b>Author:</b>{{ post.author|linebreaksbr }}</p>
         {% endif %}
         <h2>{{ post.title }}</h2>
+        <div class="tags mb-2 mt-2">
+            {% for tag in post.tag.all %}
+            <a href="{% url 'blog:tag_post' tag_slug=tag.slug %}" class=" tag">{{ tag.title }}
+            </a>
+            {% endfor %}
+        </div>
         <p>{{ post.text|linebreaksbr }}</p>
         <img src="{{ post.featured_image.url }}" width="30%" height="30%"><br>
         <br>
-
+        {% if post.category %}
+        <a class="text-decoration-none text-black" href="{% url 'blog:cat_post' category_slug=post.category.title %}">
+        <p class="card-text text-decoration-none">Category: {{ post.category.title }}</p>
+        </a>
+        {% endif %}
         <h5>Add comment</h5>
         
         <form method="post" action="">
@@ -53,7 +62,7 @@
                     
                   {% comment %} <button type="submit" class="btn btn-primary" onclick="replyForm()">Reply</button> {% endcomment %}
                   <div >
-                  <form method="post" class="d-none" id="reply_form" action="{%url 'blog:reply'%}">
+                  <form method="post" class="d-none" id="reply_form">
                       {{ comment_form.as_p }}
                       {% csrf_token %}
                       <input type="hidden" name="parent_id" value="{{ comment.id }}">
