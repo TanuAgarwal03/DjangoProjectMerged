@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
 from .views import *
 app_name='blog'
 
@@ -22,7 +22,6 @@ urlpatterns = [
     path('user<str:username>/' ,views.user_detail,name='user_detail'),
     path('edit_profile/' ,views.edit_profile,name='edit_profile'),
     path('comment/reply/', views.reply_comment, name="reply"),
-    # path('export_query_to_csv', views.export_query_to_csv , name='export_query_to_csv'),  x
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

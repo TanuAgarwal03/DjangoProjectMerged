@@ -5,15 +5,14 @@ from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.conf import settings
+from django.urls import reverse
 from .forms import CustomUserCreationForm 
 from .forms import CustomUserChangeForm
-from .forms import PostForm
 from .forms import CommentForm
+from .forms import PostForm
 from .models import Comment
 from .models import Post
 from .models import User
-from django.urls import reverse
-
 
 def signup_view(request):
     if request.method == 'POST':
@@ -43,10 +42,6 @@ def logout_view(request):
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date') 
-    print("-------------")
-    print(Post.tag)
-    print("-------------")
-
     return render(request,'blog/post_list.html',{'posts' : posts})
 
 def uploadok(request):
@@ -55,11 +50,7 @@ def uploadok(request):
 def post_detail(request,slug):
     post = get_object_or_404(Post, slug=slug)
     comments = post.comments.filter(active=True)
-    print("------")
-    print(comments)
-    print("------")
     new_comment = None
-    
     
     if request.method == 'POST':
         comment_form = CommentForm(data = request.POST)
@@ -72,9 +63,7 @@ def post_detail(request,slug):
         comment_form =CommentForm()
     return render(request, 'blog/post_detail.html', {'post': post ,'new_comment' : new_comment ,'comments':comments , 'comment_form' : comment_form})
 
-
 def reply_comment(request):
-    # post = get_object_or_404(Post, slug=slug)
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -86,10 +75,8 @@ def reply_comment(request):
             reply.post = Post(id=post_id)
             reply.parent = Comment(id=parent_id)
             reply.save()
-            # return redirect(post_url+'/#'+str(reply.id))
             return redirect('blog:post_detail' , slug = mypost.slug)
     return redirect("/")
-
 
 def post_new(request):
     if request.method == "POST":
@@ -104,7 +91,7 @@ def post_new(request):
             return redirect('blog:post_detail', slug= post.slug)
     else:
         form = PostForm()
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'blog/post_edit.html', {'form': form,'page':'New'})
     
 def post_edit(request, slug):
     post = get_object_or_404(Post, slug=slug)
@@ -117,7 +104,7 @@ def post_edit(request, slug):
             return redirect('blog:post_detail', slug= post.slug)
     else:
         form = PostForm(instance=post) 
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'blog/post_edit.html', {'form': form,'page':'Edit'})
 
 def edit_profile(request):
     user = request.user
@@ -156,14 +143,3 @@ def tag_details(request, tag_slug):
     posts = Post.objects.filter(tag=tag)
     tag_slug = "Tag for: "+tag_slug
     return render(request, 'blog/post_list.html', {'posts': posts,"query":tag_slug})
-
-# def export_query_to_csv(request):
-#     data = User.objects.all()
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="user.csv"'
-#     writer = csv.writer(response)
-#     writer.writerow(['dob','image' , 'gender' ,'state','country']) 
-#     user_fields = data.values_list('dob','image' , 'gender' ,'state','country')
-#     for user in data:
-#         writer.writerow([])
-#     return response

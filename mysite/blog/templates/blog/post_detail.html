@@ -27,29 +27,26 @@
             {% endfor %}
         </div>
         <p>{{ post.text|linebreaksbr }}</p>
-        <img src="{{ post.featured_image.url }}" width="30%" height="30%"><br>
-        <br>
+        <img src="{{ post.featured_image.url }}" width="30%" height="30%">
+        <br><br>
         {% if post.category %}
-        <a class="text-decoration-none text-black" href="{% url 'blog:cat_post' category_slug=post.category.title %}">
-        <p class="card-text text-decoration-none">Category: {{ post.category.title }}</p>
-        </a>
+            <a class="text-decoration-none text-black" href="{% url 'blog:cat_post' category_slug=post.category.title %}">
+                <p class="card-text text-decoration-none">Category: {{ post.category.title }}</p>
+            </a>
         {% endif %}
         <h5>Add comment</h5>
-        
         <form method="post" action="">
             {% csrf_token %}
             <div id="commentForm" class="d-none">
                 {{ comment_form.as_p }}
             </div>
-            
             <button type="submit" class="btn btn-primary" onclick="showCommentBox()">Comment</button>
         </form>
 
         {% with comments.count as total_comments %}
-
         {% endwith %}
         {% if not post.comments.all %}
-        No comments yet
+            No comments yet
         {% else %}
         {% for comment in post.get_comments %}
         {% include 'blog/comment.html' with comment=comment %}
@@ -59,8 +56,6 @@
                   <p>{{reply.user.username}} replied {{ reply.text }}</p>
                   </div>
                   {% endfor %}
-                    
-                  {% comment %} <button type="submit" class="btn btn-primary" onclick="replyForm()">Reply</button> {% endcomment %}
                   <div >
                   <form method="post" class="d-none" id="reply_form">
                       {{ comment_form.as_p }}
@@ -70,10 +65,7 @@
                     </form>
                       <br><br>
                  </div>
-            
           {% endfor %}
         {% endif %}
-   
-        
     </article>
 {% endblock %}

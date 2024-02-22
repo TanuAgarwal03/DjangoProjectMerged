@@ -12,31 +12,29 @@
         {% endif %}
 
         {% if user.email %}
-        <p>Email: {{ user.email }}</p>
+            <p>Email: {{ user.email }}</p>
         {% endif %}
 
         {% if user.first_name %}
-        <p>First Name: {{ user.first_name }}</p>
+            <p>First Name: {{ user.first_name }}</p>
         {% endif %}
 
         {% if user.last_name %}
-        <p>Last Name: {{ user.last_name }}</p>
+            <p>Last Name: {{ user.last_name }}</p>
         {% endif %}
         
         {% if user.dob %}
-        <p>Date of Birth: {{ user.dob }}</p>
+            <p>Date of Birth: {{ user.dob }}</p>
         {% endif %}
 
         {% if user.state %}
-        <p>State: {{ user.state }}</p>
+            <p>State: {{ user.state }}</p>
         {% endif %}
 
         {% if user.country %}
-        <p>Country: {{ user.country }}</p>
+            <p>Country: {{ user.country }}</p>
         {% endif %}
-
         
-
         <a href="{% url 'blog:edit_profile' %}" class="btn btn-primary">Edit</a>
     </div>
 </div>

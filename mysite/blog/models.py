@@ -1,13 +1,12 @@
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _ 
+from django.contrib.auth import get_user_model
+from django.utils.html import mark_safe
 from django.conf import settings
-from django.db import models
 from django.utils import timezone
 from django.urls import reverse
-from django.contrib.auth.models import AbstractUser
+from django.db import models
 from autoslug import AutoSlugField
-from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _ 
-from django.utils.html import mark_safe
-
 
 Gender_choices=[
     ('M', 'Male'),
@@ -101,8 +100,6 @@ Country_choices=[
     ('HN', 'Honduras'),
 ]
 
-
-
 class User(AbstractUser):
    gender = models.CharField(max_length=1,choices= Gender_choices ,blank=True)
    country = models.CharField(max_length=2 ,choices= Country_choices, blank=True,default= 'IN')
@@ -118,7 +115,6 @@ class User(AbstractUser):
         url = self.image.url))
 
 class Category(models.Model):
-    
     title = models.CharField(max_length=100, unique= True)
     slug = AutoSlugField(populate_from="title", unique=True)
 
@@ -131,8 +127,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.title
 
-
-class Post(models.Model): #object
+class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL,blank=True, null=True,)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
@@ -149,6 +144,9 @@ class Post(models.Model): #object
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('blog:post_detail' ,kwargs={"slug": self.slug})
     
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
@@ -173,8 +171,7 @@ class Comment(models.Model):
     def get_comments(self):
         return Comment.objects.filter(parent=self).filter(active=True)
 
-    def get_absolute_url(self):
-        return reverse('blog:post_detail' ,kwargs={"post_slug": self.post_slug})
+    
 
 
 

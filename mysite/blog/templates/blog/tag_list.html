@@ -1,9 +1,7 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-
 <h1>Tags</h1>
-
 <div class="catContainer">
     {% for tag in tags %}
     <a class="text-decoration-none text-black" href="{% url 'blog:tag_post' tag_slug=tag.name %}">
@@ -13,5 +11,4 @@
     </a>
     {% endfor %}
 </div>
-
 {% endblock %}

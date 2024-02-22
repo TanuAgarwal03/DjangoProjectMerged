@@ -1,15 +1,15 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import User
+from django.http import HttpResponse
+from django.urls import reverse
 from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .models import User
 from .models import Post
 from .models import Category
 from .models import Tag
 from .models import Comment
 import csv
-from django.http import HttpResponse
 
 class CustomUserAdmin(admin.ModelAdmin):
     model = User
@@ -18,7 +18,6 @@ class CustomUserAdmin(admin.ModelAdmin):
     def export_as_csv(self, request, queryset):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="users.csv"'
-
         writer = csv.writer(response)
         writer.writerow([
              'Username',
@@ -45,24 +44,21 @@ class CustomUserAdmin(admin.ModelAdmin):
                 user.country,
                 user.image
             ])
-
         return response
-
     export_as_csv.short_description = "Export selected users as CSV"
     
 
 class CustomPostAdmin(admin.ModelAdmin):
     model = Post
-    list_display = ('title' , 'created_date','published_date' )
+    list_display = ('title' ,'published_date','view_on_site' )
     list_filter = ["published_date","tag" , "category"]
     filter_horizontal = ('tag',)
     search_fields = ('title', 'author',)
 
-    def view_on_site(self, obj):
-        url = reverse("blog:post_detail", kwargs={"post_slug": obj.post_slug})
+    def view_on_site(self, obj):    
+        url = reverse("blog:post_detail", kwargs={"slug": obj.slug})
         return url
    
-    
 class CustomCategoryAdmin(admin.ModelAdmin):
     model = Category
     list_filter = ['title']
@@ -70,7 +66,6 @@ class CustomCategoryAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
     
-  
 class CustomTagAdmin(admin.ModelAdmin):
     model = Tag
     search_fields = ('title',)

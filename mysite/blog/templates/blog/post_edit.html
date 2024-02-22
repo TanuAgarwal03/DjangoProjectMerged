@@ -1,16 +1,7 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    {% if url == '/post/new' %}
-        <h2>New post</h2>
-    {% comment %} {% elif url == '/post/<slug:slug>/edit/' %}
-        <h2>Edit post</h2>
-    {% endif %}   {% endcomment %}
-    {% else %}
-        <h2>Edit Post</h2>
-    {% endif %}
-        
-
+    <h2>{{page}} Post</h2>   
     <form method="POST" enctype="multipart/form-data" class="post-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-secondary">Save</button>

@@ -1,4 +1,3 @@
-
 {% extends 'blog/base.html' %}
 {% load static %}
 {% block content %}
@@ -10,26 +9,23 @@
         <time class="date">
             {{ post.published_date }}
         </time>
-
         <h2><a href="{% url 'blog:post_detail' slug=post.slug %}">{{ post.title }}</a></h2>
         <div class="mb-3 mt-3">
             Tag:
             {% for tag in post.tag.all %}
-            <a class="tag mx-1 p-2" href="{%url 'blog:tag_post' tag_slug=tag.slug%}"><span>{{ tag.title}}</span></a>
+                <a class="tag mx-1 p-2" href="{%url 'blog:tag_post' tag_slug=tag.slug%}"><span>{{ tag.title}}</span></a>
             {% endfor %}
         </div>
         {% if post.category.title %}
-        <a class="text-decoration-none text-black mb-3"
-            href="{% url 'blog:cat_post' category_slug=post.category.title %}">
-        <p class="card-text text-decoration-none">Category: {{ post.category.title }}</p>
-        </a>
+            <a class="text-decoration-none text-black mb-3"
+                href="{% url 'blog:cat_post' category_slug=post.category.title %}">
+                <p class="card-text text-decoration-none">Category: {{ post.category.title }}</p>
+            </a>
         {% endif %}
         <p>{{ post.text|linebreaksbr }}</p>   
         {% if post.thumbnails %}
-        <img src = "{{ post.thumbnails.url }}" alt="{{post.thumbnails}}" width= "20%" height="20%">
+            <img src = "{{ post.thumbnails.url }}" alt="{{post.thumbnails}}" width= "20%" height="20%">
         {% endif %}
-
-        {% comment %} <p>{{ post.thumbnails.url }}</p> {% endcomment %}
        
     </article>  
 {% endfor %}
