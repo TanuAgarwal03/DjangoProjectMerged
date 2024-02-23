@@ -6,12 +6,11 @@ __pycache__
 # Env
 .env
 myvenv/
-venv/
-mysite/myvenv/
+
 
 # Database
 db.sqlite3
-mysite/db.sqlite3
+
 
 # Static folder at project root
 /static/
