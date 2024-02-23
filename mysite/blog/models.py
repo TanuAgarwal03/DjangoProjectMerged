@@ -114,6 +114,11 @@ class User(AbstractUser):
        return mark_safe('<img src = "{url}" width = "50"/>'.format(
         url = self.image.url))
 
+   def image_preview2(self): 
+        return mark_safe('<img src = "{url}" width = "70"/>'.format(
+             url = self.image.url
+         ))
+
    def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
