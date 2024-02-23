@@ -114,18 +114,26 @@ class User(AbstractUser):
        return mark_safe('<img src = "{url}" width = "50"/>'.format(
         url = self.image.url))
 
+   def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
 class Category(models.Model):
     title = models.CharField(max_length=100, unique= True)
     slug = AutoSlugField(populate_from="title", unique=True)
 
     def __str__(self):
         return self.title
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
 class Tag(models.Model):
     title= models.CharField(max_length=100,unique=True)
     slug = AutoSlugField(populate_from="title", unique=True, null = True , default=None)
+    
     def __str__(self):
         return self.title
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
 class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL,blank=True, null=True,)
@@ -137,8 +145,12 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     thumbnails = models.ImageField(upload_to='thumbnails/', default=None)
     featured_image = models.ImageField(upload_to='uploads/', default= None)
-    tag = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag)
     
+    def publish(self):
+        self.published_date = timezone.now()
+        self.save()
+        
     def get_comments(self):
         return Comment.objects.filter(post=self, parent__isnull=True, active=True)
 

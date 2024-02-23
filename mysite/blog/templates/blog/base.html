@@ -10,27 +10,38 @@
     </head>
     <body>
         <header class="page-header">
-          <div class="container">
-            {% if user.is_authenticated %}
+          <div class="container d-flex justify-content-between align-items-center">
+            <div class="btn-group d-flex flex-column">
+                <a id="link1" class="btn btn-primary  mb-2" href="{% url 'polls:index' %}"> Poll App </a>
+                <a id="link2" class="btn btn-primary  mb-2" href="{% url 'blog:post_list' %}"> Blog App </a>
+                {% if user.is_authenticated %}
                 <a class="btn btn-primary" href="{% url 'blog:logout' %}">Logout</a>
                 {% else %}
                 <a class="btn btn-primary" href="{% url 'blog:login' %}">Login</a>
                 {% endif %}
+            </div>
             {% if user.is_authenticated %}
-            <a class="btn btn-primary"
-                href="{% url 'blog:user_detail' username=user.username %}">Profile</a>
-            <a href="{% url 'blog:post_new' %}" class="top_menu">
-                {% include './icons/file-earmark-plus.svg' %}
+            <a href="{% url 'blog:post_new' %}" class="btn btn-success mx-4">
+                +
             </a>
-            
-            
-            {% else %}
-            <a class="btn btn-primary" href="{% url 'blog:signup' %}">Sign Up</a>
             {% endif %}
+            <div>
+                
+                <h2 id="blogHome" ><a class="text-light text-decoration-none" href="{% url 'blog:post_list' %}">Home</a></h2></div>
+                <h2><a class="text-light text-decoration-none"
+                        href="{% url 'blog:cat_list' %}">Category</a></h2>
+                <h2><a class="text-light text-decoration-none" href="{% url 'blog:tag_list' %}">Tags</a>
+                </h2>
+                {% if user.is_authenticated %}
+                <h2 class="h3 mb-0"><a class="text-light text-decoration-none"
+                        href="{% url 'blog:user_detail' username=user.username %}">Profile</a></h2>
 
-              <h1><a href="/">Django Girls Blog</a></h1>
-          </div>
-        </header>
+                {% else %}
+                <a class="btn btn-primary" href="{% url 'blog:signup' %}">Sign Up</a>
+                {% endif %}
+            </div>
+          </div>  
+        </header> 
         <main class="content container">
             <div class="row">
                 <div class="col">

@@ -1,18 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
-from django.contrib.auth import login
+from django.contrib.auth import login , authenticate
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.conf import settings
 from django.urls import reverse
-from .forms import CustomUserCreationForm 
-from .forms import CustomUserChangeForm
-from .forms import CommentForm
-from .forms import PostForm
-from .models import Comment
-from .models import Post
-from .models import User
+from .forms import *
+from .models import *
 
 def signup_view(request):
     if request.method == 'POST':
@@ -26,23 +21,24 @@ def signup_view(request):
     return render(request, 'blog/signup.html', {'form': form})
 
 def login_view(request):
-    if request.method =='POST':
-        form = AuthenticationForm(request ,request.POST)
-        if form.is_valid():
-            user = form.get_user()
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
             login(request, user)
-            return redirect('blog:post_list')            
-    else:
-        form = AuthenticationForm()
-    return render(request , 'blog/login.html', {'form' :form})
+            return redirect('blog:post_list')
+        else:
+            return render(request, 'blog/login.html', {'error_message': 'Invalid login credentials'})
+    return render(request, 'blog/login.html')
 
 def logout_view(request):
     logout(request)
     return redirect('blog:post_list')  
 
 def post_list(request):
-    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date') 
-    return render(request,'blog/post_list.html',{'posts' : posts})
+    posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+    return render(request,'blog/post_list.html',{'posts' : posts })
 
 def uploadok(request):
     return HttpResponse('upload successful')
@@ -51,7 +47,6 @@ def post_detail(request,slug):
     post = get_object_or_404(Post, slug=slug)
     comments = post.comments.filter(active=True)
     new_comment = None
-    
     if request.method == 'POST':
         comment_form = CommentForm(data = request.POST)
         if comment_form.is_valid():
@@ -99,8 +94,10 @@ def post_edit(request, slug):
         form = PostForm(request.POST , instance=post) 
         if form.is_valid():
             post = form.save(commit=False)
+            post.author = request.user
             post.published_date = timezone.now()
             post.save()
+            form.save_m2m()
             return redirect('blog:post_detail', slug= post.slug)
     else:
         form = PostForm(instance=post) 
@@ -121,25 +118,27 @@ def user_detail(request, username):
     user = get_object_or_404(User,username=username)
     return render(request, 'blog/userdetails.html', {'user': user})
 
-def index(request):
-    return render(request, 'index.html')
 
 def cat_list(request):
     categories = Category.objects.all()
     return render(request, 'blog/cat_list.html', {'categories':categories})
 
 def tag_list(request):
-    tag = Tag.objects.all()
-    return render(request, 'blog/tag_list.html', {'tag':tag})
+    tags = Tag.objects.all()
+    return render(request, 'blog/tag_list.html', {'tags':tags})
 
 def cat_details(request, category_slug):
     categories = get_object_or_404(Category, title=category_slug)
     posts = Post.objects.filter(category=categories)
     category_slug = "Category for: "+category_slug
-    return render(request, 'blog/post_list.html', {'posts': posts,'categories':categories,"query":category_slug})
+    return render(request, 'blog/post_list.html', {'posts': posts,'categorie':categories,"query":category_slug})
 
-def tag_details(request, tag_slug):
-    tag = get_object_or_404(Tag, name=tag_slug)
-    posts = Post.objects.filter(tag=tag)
-    tag_slug = "Tag for: "+tag_slug
-    return render(request, 'blog/post_list.html', {'posts': posts,"query":tag_slug})
+def tag_details(request, tag_title):
+    tag = get_object_or_404(Tag, title=tag_title)
+    posts = Post.objects.filter(tags=tag)
+    tag_title = "Tag for: " + tag_title
+    return render(request, 'blog/post_list.html', {'posts': posts, 'tag': tag, 'query': tag_title})
+    
+def index(request):
+    return render(request, 'polls/index.html')
+

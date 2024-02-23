@@ -3,14 +3,15 @@
 {% block content %}
 <div class="w-50 container d-flex justify-content-between  m-auto">
     <div class=" m-auto">
+        <div class="m-auto text-center">
+            {% if user.image %}
+            <div class = "rounded-circle "  style="border-radius: 50%; overflow: hidden; width: 60px; height: 60px;display: inline-block;border: 2px solid black;">
+                {{ user.image_preview }}
+            </div>
+            {% endif %}
+        </div>
         <h4>User Profile : <u>{{ user.username }}</u></h4>
         
-        {% if user.image %}
-        <div class = "rounded-2">
-            {{ user.image_preview }}
-        </div>
-        {% endif %}
-
         {% if user.email %}
             <p>Email: {{ user.email }}</p>
         {% endif %}

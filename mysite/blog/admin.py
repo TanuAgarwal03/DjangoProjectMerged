@@ -4,11 +4,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import reverse
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import User
-from .models import Post
-from .models import Category
-from .models import Tag
-from .models import Comment
+from .models import *
 import csv
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -51,8 +47,8 @@ class CustomUserAdmin(admin.ModelAdmin):
 class CustomPostAdmin(admin.ModelAdmin):
     model = Post
     list_display = ('title' ,'published_date','view_on_site' )
-    list_filter = ["published_date","tag" , "category"]
-    filter_horizontal = ('tag',)
+    list_filter = ["published_date","tags" , "category"]
+    filter_horizontal = ('tags',)
     search_fields = ('title', 'author',)
 
     def view_on_site(self, obj):    

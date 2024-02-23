@@ -8,12 +8,15 @@ from .models import *
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ( 'title', 'text', 'category', 'tag' ,'thumbnails','featured_image') 
+        fields = ( 'title', 'text', 'category', 'tags' ,'thumbnails','featured_image') 
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email','password1', 'password2', 'first_name', 'last_name', 'dob','gender','state','country','image')
+        widgets ={
+            'dob': forms.widgets.DateInput(attrs={'type': 'date'})
+        }
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
@@ -28,6 +31,7 @@ class SignupForm(UserCreationForm):
     class Meta:
         model = Post
         fields =['username','password1' ,'password2']
+        
 
 class AuthenticationForm(forms.Form):
     username = forms.CharField()

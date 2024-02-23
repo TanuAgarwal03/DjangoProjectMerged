@@ -12,9 +12,11 @@ from django.contrib.auth import get_user_model
 
 class IndexView(generic.ListView):
     template_name = 'polls/index.html'
-    context_object_name = 'latest_question_list'
-
+    context_object_name = 'questions_list'
+    
     def get_queryset(self):
+        print("kkk")
+        print(Question.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')[:5])
         """Return the last five published questions."""
         return Question.objects.filter(pub_date__lte = timezone.now()).order_by('-pub_date')[:5]
 
