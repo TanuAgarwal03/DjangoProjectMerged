@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _ 
 from django.contrib.auth import get_user_model
 from django.utils.html import mark_safe
 from django.conf import settings
@@ -143,6 +142,7 @@ class Tag(models.Model):
 class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL,blank=True, null=True,)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag)
     title = models.CharField(max_length=200)
     slug = AutoSlugField(populate_from ='title' , unique = True, null = True , default=None )
     text = models.TextField()
@@ -150,7 +150,6 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     thumbnails = models.ImageField(upload_to='thumbnails/', default=None)
     featured_image = models.ImageField(upload_to='uploads/', default= None)
-    tags = models.ManyToManyField(Tag)
     
     def publish(self):
         self.published_date = timezone.now()

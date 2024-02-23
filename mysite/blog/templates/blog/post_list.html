@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block content %}
+
 {% if tag.title %}
 <h3> Posts tagged for : <u>{{ tag.title }}</u></h3>
 {% endif %}
@@ -10,8 +11,6 @@
 {% if categorie.title %}
 <h3> Posts categorized for : <u>{{ categorie.title }}</u></h3>
 {% endif %}
-
-
 
 {% for post in posts %}
     <article class="post">

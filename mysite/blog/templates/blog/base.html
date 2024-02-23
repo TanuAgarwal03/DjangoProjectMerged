@@ -62,7 +62,6 @@
                 }
             }
         </script>
-
         <script>
           function replyForm(){
             var element = document.getElementById("reply_form")
@@ -81,7 +80,10 @@
             }
             .overflow-limit{
                 max-height: 65px;
-            overflow: hidden;
+                overflow: auto;
+                text-overflow: ellipsis;
+                max-width: 600px;
+            
             }
           </style>
     </body>
