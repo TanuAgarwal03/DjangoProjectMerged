@@ -4,9 +4,9 @@
 <h1>Tags</h1>
 <div class="catContainer">
     {% for tag in tags %}
-    <a class="text-decoration-none text-black" href="{% url 'blog:tag_post' tag_title=tag.title %}">
+    <a href="{% url 'blog:tag_post' tag_title=tag.title %}">
         <p>
-            {{tag.title}}
+            {{tag.title}}<br>
         </p>
     </a>
     {% endfor %}

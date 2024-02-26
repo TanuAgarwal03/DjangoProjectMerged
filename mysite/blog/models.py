@@ -104,7 +104,7 @@ class User(AbstractUser):
    country = models.CharField(max_length=2 ,choices= Country_choices, blank=True,default= 'IN')
    dob = models.DateField(null=False, blank=False, default=timezone.now)
    state = models.CharField(max_length=20 , blank= True)
-   image= models.ImageField(upload_to='profile_images/'  , blank=True , default=None)
+   image= models.ImageField(upload_to='profile_images/'  , blank=True , default="Screenshot_24.png")
 
    def __str__(self):
        return self.username
@@ -167,13 +167,13 @@ class Post(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
     post = models.ForeignKey(Post,on_delete=models.CASCADE, related_name="comments")
+    parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
     text = models.TextField(null=True)
     name = models.CharField(max_length=50)
     body = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
-    parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
     
     class Meta:
         ordering = ('-created',)

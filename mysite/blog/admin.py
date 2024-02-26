@@ -2,13 +2,18 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 from django.http import HttpResponse
+from django.contrib.auth.admin import UserAdmin
 from django.urls import reverse
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import *
 import csv
 
-class CustomUserAdmin(admin.ModelAdmin):
+
+class CustomUserAdmin(UserAdmin):
     model = User
+    list_display = ('username' ,'email' , 'image')
+    list_filter = ["last_name","country","state" , "gender"]
+    search_fields = ('username', 'country',)
     actions = ['export_as_csv']
 
     def export_as_csv(self, request, queryset):
@@ -71,9 +76,9 @@ class CustomTagAdmin(admin.ModelAdmin):
 
 class CustomCommentAdmin(admin.ModelAdmin):
     model = Comment
-    list_display = ['name','post','text','body']
+    list_display = ['name','post','body']
     list_filter = ["created"]
-    search_fields = ('text',)
+    search_fields = ('body','name')
 
 admin.site.register(User ,CustomUserAdmin)
 admin.site.register(Post,CustomPostAdmin)

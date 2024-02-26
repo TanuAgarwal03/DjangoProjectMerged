@@ -19,7 +19,10 @@
                 </a>
             {% endif %}
         </aside>
-        <h2 class="card-title mb-3 custom-font text-decoration-none">{{ post.title }}</h2>
+        <p style="display:inline-block;">
+            <img src="{{ post.thumbnails.url }}" alt = "{{ post.thumbnails}}"width="40px" height="40px">
+            <h2 class="card-title mb-3 custom-font text-decoration-none">{{ post.title }}</h2>
+        </p>                  
         {% if post.published_date %}
             <time class="date">
                 {{ post.published_date }}
@@ -32,14 +35,19 @@
             </a>
             {% endfor %}
         </div>
-        <p>{{ post.text|linebreaksbr }}</p>
+        {% if post.category %}
+        <p>Category:  
+            <a href="{% url 'blog:cat_post' category_slug=post.category.title %}">
+                 {{ post.category.title }} 
+            </a>
+        </p>
+        {% endif %}
+        
         <img src="{{ post.featured_image.url }}" alt = "{{ post.title}}"width="30%" height="30%">
         <br><br>
-        {% if post.category %}
-            <a class="text-decoration-none text-black" href="{% url 'blog:cat_post' category_slug=post.category.title %}">
-                <p class="card-text text-decoration-none">Category: {{ post.category.title }}</p>
-            </a>
-        {% endif %}
+        <p>{{ post.text|linebreaksbr }}</p>
+        <p><img src="{{post.author.image.url}}" width="25px" height="25px" > Author :{{post.author}} </p>
+        
         <h5>Add comment</h5>
         <form method="post" action="">
             {% csrf_token %}

@@ -13,7 +13,7 @@ class PostForm(forms.ModelForm):
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'email','password1', 'password2', 'first_name', 'last_name', 'dob','gender','state','country','image')
+        fields = ('username', 'email','password1', 'password2', 'first_name', 'last_name', 'dob','gender','state','country')
         widgets ={
             'dob': forms.widgets.DateInput(attrs={'type': 'date'})
         }
