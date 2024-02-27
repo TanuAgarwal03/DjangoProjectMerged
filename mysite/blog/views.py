@@ -55,7 +55,7 @@ def post_detail(request,slug):
             new_comment.save()
             return redirect('blog:post_detail' , slug = slug)
     else:
-        comment_form =CommentForm()
+        comment_form =CommentForm() 
     return render(request, 'blog/post_detail.html', {'post': post ,'new_comment' : new_comment ,'comments':comments , 'comment_form' : comment_form})
 
 def reply_comment(request):
