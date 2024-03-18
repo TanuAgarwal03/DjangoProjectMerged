@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import logout
@@ -141,4 +142,5 @@ def tag_details(request, tag_title):
     
 def index(request):
     return render(request, 'polls/index.html')
+
 

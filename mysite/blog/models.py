@@ -150,7 +150,7 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     thumbnails = models.ImageField(upload_to='thumbnails/', default=None)
     featured_image = models.ImageField(upload_to='uploads/', default= None)
-    
+
     def publish(self):
         self.published_date = timezone.now()
         self.save()
