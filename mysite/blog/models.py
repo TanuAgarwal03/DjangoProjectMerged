@@ -105,7 +105,7 @@ class User(AbstractUser):
    dob = models.DateField(null=False, blank=False, default=timezone.now)
    state = models.CharField(max_length=20 , blank= True)
    image= models.ImageField(upload_to='profile_images/'  , blank=True , default="Screenshot_24.png")
-
+  
    def __str__(self):
        return self.username
 

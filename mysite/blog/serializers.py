@@ -3,6 +3,8 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from rest_framework.exceptions import ValidationError
+
 
 class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
@@ -11,18 +13,22 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'confirm_password', 'first_name', 'last_name' , 'email', 'gender' , 'country' , 'state' ,'dob' , 'image' ,'token','id']
+        fields = ['username', 'password', 'confirm_password', 'first_name', 'last_name' , 'email', 'gender' , 'country' , 'state' ,'dob' , 'image' ,'token','id' ,'last_login' ,'is_staff' , 'is_active', 'date_joined' , 'is_superuser'  ]
         extra_kwargs = {
-            'password': {'write_only': True },
+            'password': {'write_only': True},
+            'last_login': {'read_only': True},
+            'is_staff': {'read_only': True},
+            'is_active': {'read_only': True},
+            'date_joined': {'read_only': True},
+            'is_superuser': {'read_only': True},
         }
-
     def validate(self, data):
         if data['password'] != data['confirm_password']:
             raise serializers.ValidationError("The password and confirm password do not match.")
         return data
 
     def create(self, validated_data):
-        validated_data.pop('confirm_password')  # Remove confirm_password from validated_data
+        validated_data.pop('confirm_password') 
         user = User.objects.create_user(**validated_data)
         return user
     
@@ -81,3 +87,26 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['title']
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True ,required=True)
+    new_password = serializers.CharField(write_only=True ,required=True)
+    confirm_password = serializers.CharField(write_only=True , required=True)
+    
+    class Meta:
+        model = User
+        fields = ('old_password' , 'new_password','confirm_password' )
+    # def validate_old_password(self, value):
+    #     user = self.context['request'].user
+    #     if not user.check_password(value):
+    #         raise ValidationError("Incorrect old password")
+    #     return value
+    def validate(self , attrs):
+        if attrs['new_password'] != attrs['confirm_password']:
+            raise serializers.ValidationError({"new_password" : "Passwords didn't match/"})
+        return attrs
+    
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data['new_password'])
+        instance.save()
+        return instance
