@@ -110,3 +110,25 @@ class ChangePasswordSerializer(serializers.Serializer):
         instance.set_password(validated_data['new_password'])
         instance.save()
         return instance
+
+class CommentSerializer(serializers.ModelSerializer):
+    post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
+    post = serializers.SerializerMethodField()
+    user = UserSerializer(read_only=True, context={'request': None})  
+    parent = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        # fields = ['id' ,'user' ,'post','created', 'parent' , 'post_id']
+        fields= "__all__"
+
+    def get_post(self, object):
+        post = object.post
+        if post:
+            return {'title': post.title}
+        return None
+
+    def get_parent(self, object):
+        if object.parent:
+            return CommentSerializer(object.parent).data
+        return None

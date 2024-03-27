@@ -13,6 +13,7 @@ router.register(r'user', apiViews.UserViewSet)
 router.register(r'login_api', LoginViewSet ,basename="login")
 router.register(r'signup_api',UserSignViewSet ,basename="signup")
 router.register(r'change_password', apiViews.ChangePasswordViewSet, basename="")
+router.register(r'comments' ,CommentViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

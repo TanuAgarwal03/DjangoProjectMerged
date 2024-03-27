@@ -83,4 +83,9 @@ class ChangePasswordViewSet(ViewSet):
             user.save()
             return Response({"detail": "Password has been successfully updated."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]   
+    http_method_names = ['post','get','patch']
