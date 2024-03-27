@@ -8,12 +8,12 @@ from rest_framework.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
-    confirm_password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    # confirm_password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     password = serializers.CharField(style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'confirm_password', 'first_name', 'last_name' , 'email', 'gender' , 'country' , 'state' ,'dob' , 'image' ,'token','id' ,'last_login' ,'is_staff' , 'is_active', 'date_joined' , 'is_superuser'  ]
+        fields = ['username', 'password', 'first_name', 'last_name' , 'email', 'gender' , 'country' , 'state' ,'dob' , 'image' ,'token','id' ,'last_login' ,'is_staff' , 'is_active', 'date_joined' , 'is_superuser'  ]
         extra_kwargs = {
             'password': {'write_only': True},
             'last_login': {'read_only': True},
@@ -22,20 +22,19 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined': {'read_only': True},
             'is_superuser': {'read_only': True},
         }
-    def validate(self, data):
-        if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError("The password and confirm password do not match.")
-        return data
+    # def validate(self, data):
+    #     if data['password'] != data['confirm_password']:
+    #         raise serializers.ValidationError("The password and confirm password do not match.")
+    #     return data
 
-    def create(self, validated_data):
-        validated_data.pop('confirm_password') 
-        user = User.objects.create_user(**validated_data)
-        return user
+    # def create(self, validated_data):
+    #     validated_data.pop('confirm_password') 
+    #     user = User.objects.create_user(**validated_data)
+    #     return user
     
     def get_token(self, obj):
         token, created = Token.objects.get_or_create(user=obj)
         return token.key
-
 
 class PostSerializer(serializers.ModelSerializer):
     authors = UserSerializer(source='author', read_only=True, context={'request': None})
@@ -96,11 +95,6 @@ class ChangePasswordSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ('old_password' , 'new_password','confirm_password' )
-    # def validate_old_password(self, value):
-    #     user = self.context['request'].user
-    #     if not user.check_password(value):
-    #         raise ValidationError("Incorrect old password")
-    #     return value
     def validate(self , attrs):
         if attrs['new_password'] != attrs['confirm_password']:
             raise serializers.ValidationError({"new_password" : "Passwords didn't match/"})
@@ -115,11 +109,10 @@ class CommentSerializer(serializers.ModelSerializer):
     post_id = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all(), source='post', write_only=True)
     post = serializers.SerializerMethodField()
     user = UserSerializer(read_only=True, context={'request': None})  
-    parent = serializers.SerializerMethodField()
+    # parent = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        # fields = ['id' ,'user' ,'post','created', 'parent' , 'post_id']
         fields= "__all__"
 
     def get_post(self, object):

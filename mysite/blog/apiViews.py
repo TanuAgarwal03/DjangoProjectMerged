@@ -24,18 +24,19 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset =Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    http_method_names = ['post','get','patch','delete']
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset =Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['post','get','patch','delete']
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset =User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    http_method_names = ['get']
+    http_method_names = ['get','patch','put','delete']  #isko check karna hai
 
 class UserProfileView(APIView):
     authentication_classes = [TokenAuthentication]
@@ -51,7 +52,6 @@ class PostCreateAPIView(APIView):
             serializer.save(author=request.user)  # Assuming you're using authentication
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 class LoginViewSet(viewsets.ModelViewSet):
     queryset = []
