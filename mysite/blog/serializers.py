@@ -4,11 +4,11 @@ from rest_framework.authtoken.models import Token
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from rest_framework.exceptions import ValidationError
-
+from django.contrib.auth.tokens import default_token_generator , PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_decode
 
 class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
-    # confirm_password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     password = serializers.CharField(style={'input_type': 'password'})
 
     class Meta:
@@ -31,6 +31,12 @@ class UserSerializer(serializers.ModelSerializer):
     #     validated_data.pop('confirm_password') 
     #     user = User.objects.create_user(**validated_data)
     #     return user
+    # def update(self, instance, validated_data):
+    #     # Update each field in the instance with the corresponding value in validated_data
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
+    #     instance.save()
+    #     return instance
     
     def get_token(self, obj):
         token, created = Token.objects.get_or_create(user=obj)
@@ -125,3 +131,59 @@ class CommentSerializer(serializers.ModelSerializer):
         if object.parent:
             return CommentSerializer(object.parent).data
         return None
+    
+# class PasswordResetRequestSerializer(serializers.Serializer):
+#     email = serializers.EmailField()
+
+#     def validate_email(self, value):
+#         if not User.objects.filter(email=value).exists():
+#             raise ValidationError("Email address does not exist.")
+#         return value
+# class PasswordResetSerializer(serializers.Serializer):
+#     email = serializers.EmailField()
+#     token = serializers.CharField()
+#     new_password = serializers.CharField(min_length=8)
+
+#     def validate(self, data):
+#         email = data.get('email')
+#         token = data.get('token')
+#         user = User.objects.filter(email=email).first()
+#         if not user or not default_token_generator.check_token(user, token):
+#             raise ValidationError("Invalid email or token.")
+#         return data
+    
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class PasswordResetSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8)
+# class EmailSerializer(serializers.Serializer):
+#     email = serializers.EmailField()
+
+#     class Meta:
+#         fields= ("email", )
+
+# class ResetPasswordSerializer(serializers.Serializer):
+#     password = serializers.CharField(write_only=True, min_length=8)
+    
+#     class Meta:
+#         fields =('password',)
+    
+#     def validate(self,data):
+#         password = data.get("password")
+#         token = self.context.get("kwargs").get("token")
+#         encoded_pk = self.context.get("kwargs").get("encoded_pk")
+
+#         if token is None or encoded_pk is None:
+#             serializers.ValidationError("Missing data")
+        
+#         pk = urlsafe_base64_decode(encoded_pk).decode()
+#         user = User.objects.all(pk=pk)
+
+#         if not PasswordResetTokenGenerator().check_token(user,token):
+#             raise serializers.ValidationError("reset token is invalid")
+        
+#         user.set_password(password)
+#         user.save()
+#         return data
