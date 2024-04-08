@@ -1,0 +1,15 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
+<p>List of Questions: </p>
+{% if questions_list %}
+<ul>
+    {% for que in questions_list %}
+    <li><a href="{% url 'polls:detail' que.id %}">{{ que.question_text }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No polls are available.</p>
+{% endif %}
+{% endblock %}

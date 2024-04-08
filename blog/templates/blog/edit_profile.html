@@ -1,0 +1,59 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+<head>
+    edit user profile
+</head>
+
+{% block content %}
+<h2 class="mb-4">Edit Profile</h2>
+<div class="container mt-5 mx-auto d-flex align-items-center justify-content-center">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-5" >
+            <label for="{{ form.image.id_for_label }}" class="form-label">Profile Image:</label>
+            {% if form.image.value %}
+                <img src="/media/{{ form.image.value }}" width="100px" height="100px" alt="Profile Image">
+            {% endif %}
+            <br>
+            <div class="mb-3"> {{ form.image }}</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label">Email:</label>
+            {{ form.email }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name:</label>
+            {{ form.first_name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name:</label>
+            {{ form.last_name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.dob.id_for_label }}" class="form-label">Date of Birth:</label>
+            {{form.dob}}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.state.id_for_label }}" class="form-label">State:</label>
+            {{ form.state }}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.country.id_for_label }}" class="form-label">Country:</label>
+            {{ form.country }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
