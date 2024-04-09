@@ -167,10 +167,17 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post_detail' ,kwargs={"slug": self.slug})
     
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     tts = gTTS(text=self.text, lang='en')
+    #     audio_file_path = f'media/audio/{self.slug}.mp3'
+    #     tts.save(audio_file_path)
+    #     self.audio_file = audio_file_path
+    #     self.save(update_fields=['audio_file'])
+
     def generate_speech(self):
         tts = gTTS(text=self.text, lang='en')
 
-        # Create the directory if it doesn't exist
         directory = os.path.join(settings.MEDIA_ROOT, 'audio_files')
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -178,6 +185,7 @@ class Post(models.Model):
         audio_file_path = os.path.join(directory, f'{self.slug}.mp3')
         tts.save(audio_file_path)
         return audio_file_path
+
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)
