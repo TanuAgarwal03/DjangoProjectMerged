@@ -167,12 +167,6 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post_detail' ,kwargs={"slug": self.slug})
     
-    # def generate_speech(self):
-    #     tts = gTTS(text=self.text, lang='en')
-    #     audio_file_path = os.path.join('audio_files', f'{self.slug}.mp3')
-    #     tts.save(audio_file_path)
-    #     return audio_file_path
-    
     def generate_speech(self):
         tts = gTTS(text=self.text, lang='en')
 
