@@ -9,6 +9,7 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ( 'title', 'text', 'category', 'tags' ,'thumbnails','featured_image') 
+        # fields ='__all__'
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:

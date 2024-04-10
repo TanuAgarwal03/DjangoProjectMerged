@@ -10,6 +10,7 @@ from django.urls import reverse
 from .forms import *
 from .models import *
 
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
 from gtts import gTTS
 
@@ -147,23 +148,20 @@ def index(request):
     return render(request, 'polls/index.html')
 
 
-# def text_to_speech(request):
-#     text = request.GET.get('text', '')
+# def generate_speech_view(request, post_id):
+#     post = Post.objects.get(pk=post_id)
+#     audio_file_path = post.generate_speech()
+#     return render(request, 'generate_speech.html', {'audio_file_path': audio_file_path})
 
-#     # if not text:
-#     #     return HttpResponseBadRequest("No text to speak")
+# def home(request):
+#     signals.notification.send(sender=None,request= request,user=['Geeky' , 'shows'])
+#     return HttpResponse("this is the home page")
 
-#     tts = gTTS(text=text, lang='en')
-#     audio_file_path = 'output_audio.mp3'
-#     tts.save(audio_file_path)
+# def handle_post_text_changed(sender , instance, **kwargs):
+#     print("Changes in text field")
 
-#     with open(audio_file_path, 'rb') as f:
-#         response = HttpResponse(f.read(), content_type='audio/mpeg')
-#         response['Content-Disposition'] = 'attachment; filename="output_audio.mp3"'
-#         return response
+# @csrf_exempt
+# def handle_post_text_change_view(request):
+#     # This view can handle incoming signals or serve as a placeholder
+#     return HttpResponse("Signal received and processed")
 
-def generate_speech_view(request, post_id):
-    post = Post.objects.get(pk=post_id)
-    audio_file_path = post.generate_speech()
-    # Now you can do something with the audio_file_path, such as render it in a template or return it as a response
-    return render(request, 'generate_speech.html', {'audio_file_path': audio_file_path})

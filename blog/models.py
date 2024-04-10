@@ -7,8 +7,22 @@ from django.urls import reverse
 from django.db import models
 from autoslug import AutoSlugField
 
+# from .models import Post
+from django.db.models.signals import post_save
+from django.dispatch import Signal, receiver
+# from blog.signals import *
+# from django.utils.text import slugify
+
+
+# from django.db import models
+# from django.db.models import signals
+# from django.dispatch import receiver
+
+
 from gtts import gTTS
 import os
+
+from requests import post
 
 Gender_choices=[
     ('M', 'Male'),
@@ -154,12 +168,14 @@ class Post(models.Model):
     thumbnails = models.ImageField(upload_to='thumbnails/', default=None)
     featured_image = models.ImageField(upload_to='uploads/', default= None)
 
+    audio = models.FileField(upload_to='audio_files/' ,null=True , blank=True)
+
     def publish(self):
         self.published_date = timezone.now()
         self.save()
         
     def get_comments(self):
-        return Comment.objects.filter(post=self, parent__isnull=True, active=True)
+        return Comment.objects.filter(post=self, parent__isnull=True, active=True )
 
     def __str__(self):
         return self.title
@@ -167,25 +183,31 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post_detail' ,kwargs={"slug": self.slug})
     
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     tts = gTTS(text=self.text, lang='en')
-    #     audio_file_path = f'media/audio/{self.slug}.mp3'
-    #     tts.save(audio_file_path)
-    #     self.audio_file = audio_file_path
-    #     self.save(update_fields=['audio_file'])
+    def save(self, *args, **kwargs):
+        if not self.audio:
+            tts = gTTS(text=self.text, lang='en')
+            audio_file_path = os.path.join(settings.MEDIA_ROOT, 'audio_files', f'{self.slug}.mp3')
+            tts.save(audio_file_path)
+            self.audio.name = os.path.join('audio_files', f'{self.slug}.mp3')
 
-    def generate_speech(self):
-        tts = gTTS(text=self.text, lang='en')
+        super().save(*args, **kwargs)
 
-        directory = os.path.join(settings.MEDIA_ROOT, 'audio_files')
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+@receiver(post_save, sender=Post)
+def update_audio_on_text_change(sender, instance, **kwargs):
+    if instance.pk is not None:
+        old_post = sender.objects.get(pk=instance.pk)
+        if old_post.text != instance.text:
+            audio_file_path = instance.generate_audio_from_text()
+            instance.audio = audio_file_path
 
-        audio_file_path = os.path.join(directory, f'{self.slug}.mp3')
-        tts.save(audio_file_path)
-        return audio_file_path
-
+def generate_audio_from_text(self):
+    tts = gTTS(text=self.text, lang='en')
+    directory_path = 'media/audio_files'
+    audio_file_path = os.path.join(directory_path, f"{self.pk}.mp3")
+    tts.save(audio_file_path)
+    return audio_file_path
+Post.generate_audio_from_text = generate_audio_from_text
+    
 
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True)

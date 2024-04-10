@@ -59,6 +59,22 @@ class CustomPostAdmin(admin.ModelAdmin):
     def view_on_site(self, obj):    
         url = reverse("blog:post_detail", kwargs={"slug": obj.slug})
         return url
+    
+    # def save_model(self, request, obj, form, change):
+    #     # Check if the audio field is empty and the text field is not empty
+    #     if not obj.audio and obj.text:
+    #         # Convert text to speech
+    #         tts = gTTS(text=obj.text, lang='en')
+            
+    #         # Save audio file
+    #         audio_file_path = os.path.join('audio_files', f'{obj.slug}.mp3')
+    #         tts.save(audio_file_path)
+            
+    #         # Assign audio file path to the audio field
+    #         obj.audio = audio_file_path
+        
+    #     # Save the Post instance
+    #     super().save_model(request, obj, form, change)
    
 class CustomCategoryAdmin(admin.ModelAdmin):
     model = Category

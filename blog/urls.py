@@ -24,8 +24,7 @@ urlpatterns = [
     path('user<str:username>/' ,views.user_detail,name='user_detail'),
     path('', views.post_list, name='post_list'),
 
-    path('text-to-speech/<int:post_id>/', generate_speech_view, name='generate_speech'),
-    # path('text-to-speech/', views.generate_speech_view, name='text_to_speech'),
+    # path('text-to-speech/<int:post_id>/', generate_speech_view, name='generate_speech'),
 
     
 ]
