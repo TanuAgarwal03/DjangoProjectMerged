@@ -153,20 +153,7 @@ EMAIL_HOST_PASSWORD = 'ajul qzaw wbsp ktjp'
 
    
 
-SOCIALACCOUNT_PROVIDERS = {
 
-    'google': {
-        'APP': {
-            'client_id': '375273379942-g7kdse2sonc3srs785bt8sobc1okn3lf.apps.googleusercontent.com',
-            'secret': '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',
-            'key': '',
-        }
-    }
-}
-# SOCIAL_AUTH_FACEBOOK_KEY = '935175055011328'  
-# SOCIAL_AUTH_FACEBOOK_SECRET = 'c8d558bd70ca109fc7040f6b5c4c1273' 
-SITE_ID = 1
-# SOCIALACCOUNT_LOGIN_ON_GET=True
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
