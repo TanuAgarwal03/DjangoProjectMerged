@@ -60,22 +60,6 @@ class CustomPostAdmin(admin.ModelAdmin):
         url = reverse("blog:post_detail", kwargs={"slug": obj.slug})
         return url
     
-    # def save_model(self, request, obj, form, change):
-    #     # Check if the audio field is empty and the text field is not empty
-    #     if not obj.audio and obj.text:
-    #         # Convert text to speech
-    #         tts = gTTS(text=obj.text, lang='en')
-            
-    #         # Save audio file
-    #         audio_file_path = os.path.join('audio_files', f'{obj.slug}.mp3')
-    #         tts.save(audio_file_path)
-            
-    #         # Assign audio file path to the audio field
-    #         obj.audio = audio_file_path
-        
-    #     # Save the Post instance
-    #     super().save_model(request, obj, form, change)
-   
 class CustomCategoryAdmin(admin.ModelAdmin):
     model = Category
     list_filter = ['title']
@@ -96,10 +80,17 @@ class CustomCommentAdmin(admin.ModelAdmin):
     list_filter = ["created"]
     search_fields = ('body','name')
 
+class CustomLoginLogoutAdmin(admin.ModelAdmin):
+    model = UserLoginLogout
+    list_display = ['user','login_time' , 'logout_time']
+    list_filter = ['user']
+    search_fields =['user']
+
 admin.site.register(User ,CustomUserAdmin)
 admin.site.register(Post,CustomPostAdmin)
 admin.site.register(Category,CustomCategoryAdmin)
 admin.site.register(Tag,CustomTagAdmin)
 admin.site.register(Comment,CustomCommentAdmin)
+admin.site.register(UserLoginLogout,CustomLoginLogoutAdmin)
 
 

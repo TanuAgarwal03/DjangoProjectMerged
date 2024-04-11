@@ -121,7 +121,7 @@ class User(AbstractUser):
    country = models.CharField(max_length=2 ,choices= Country_choices, blank=True,default= 'IN')
    dob = models.DateField(null=False, blank=False, default=timezone.now)
    state = models.CharField(max_length=20 , blank= True)
-   image= models.ImageField(upload_to='profile_images/'  , blank=True , default="Screenshot_24.png")
+   image= models.ImageField(upload_to='profile_images/'  , blank=True , default="/WhatsApp Image 2024-04-09 at 3.38.05 PM.jpeg")
   
    def __str__(self):
        return self.username
@@ -233,7 +233,10 @@ class Comment(models.Model):
         return Comment.objects.filter(parent=self).filter(active=True)
 
     
-
+class UserLoginLogout(models.Model):
+    user = models.ForeignKey(User , on_delete=models.CASCADE)
+    login_time = models.DateTimeField()
+    logout_time = models.DateTimeField(null = True , blank= True)
 
 
 
