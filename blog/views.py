@@ -26,10 +26,27 @@ def signup_view(request):
     return render(request, 'blog/signup.html', {'form': form})
 
 def login_view(request):
+    # m = User.objects.get(username=request.POST["username"])
+    # if request.method == "POST":
+    #     if request.session.test_cookie_worked():
+    #         request.session.delete_test_cookie()
+    #         return HttpResponse("You're logged in.")
+    #     else:
+    #         return HttpResponse("Please enable cookies and try again.")
+    # request.session.set_test_cookie()
+    # return render(request, "blog/login.html")
+
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
+#implementing sessions for storing username and password
+        if user is not None: 
+            request.session['username'] = username
+            request.session['password'] = password
+            print(request.session.get('username'))
+            print(request.session.get('password'))
         if user is not None:
             login(request, user)
             return redirect('blog:post_list')
@@ -37,12 +54,37 @@ def login_view(request):
             return render(request, 'blog/login.html', {'error_message': 'Invalid login credentials'})
     return render(request, 'blog/login.html', {"kk":"kk"})
 
+user_logout_signal = Signal()
+
 def logout_view(request):
+    # print("user logged out")
+    # if request.user.is_authenticated:
+    #     user_logout_signal.send(sender=request , user= request.user)
     logout(request)
     return redirect('blog:post_list')  
 
+
+
+# def custom_logout_view(request):
+#     print(f"User logged out.")
+#     if request.user.is_authenticated:
+#         user_logout_signal.send(sender=request, user=request.user)
+#         logout(request)
+#     return redirect('blog/login.html')
+
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
+
+    #implementing sessions for last created post
+    last_post = Post.objects.filter(published_date__lte=timezone.now()).order_by('-created_date').first()
+    
+    # Store the ID or title of the last post in the session
+    # if last_post is not None:
+    #     request.session['last_post_id'] = last_post.id
+    #     request.session['last_post_title'] = last_post.title
+    #     print(request.session.get('last_post_ids'))
+    #     print(request.session.get('last_post_title'))
+    
     return render(request,'blog/post_list.html',{'posts' : posts })
 
 def uploadok(request):
@@ -146,22 +188,4 @@ def tag_details(request, tag_title):
     
 def index(request):
     return render(request, 'polls/index.html')
-
-
-# def generate_speech_view(request, post_id):
-#     post = Post.objects.get(pk=post_id)
-#     audio_file_path = post.generate_speech()
-#     return render(request, 'generate_speech.html', {'audio_file_path': audio_file_path})
-
-# def home(request):
-#     signals.notification.send(sender=None,request= request,user=['Geeky' , 'shows'])
-#     return HttpResponse("this is the home page")
-
-# def handle_post_text_changed(sender , instance, **kwargs):
-#     print("Changes in text field")
-
-# @csrf_exempt
-# def handle_post_text_change_view(request):
-#     # This view can handle incoming signals or serve as a placeholder
-#     return HttpResponse("Signal received and processed")
 

@@ -151,9 +151,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tanuagarwal352002@gmail.com' 
 EMAIL_HOST_PASSWORD = 'ajul qzaw wbsp ktjp'
 
-   
-
-
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
