@@ -4,9 +4,10 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.contrib.auth.admin import UserAdmin
 from django.urls import reverse
-from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import *
 import csv
+from django.contrib.admin.models import LogEntry
+from blog.models import Testing
 
 
 class CustomUserAdmin(UserAdmin):
@@ -86,11 +87,52 @@ class CustomLoginLogoutAdmin(admin.ModelAdmin):
     list_filter = ['user']
     search_fields =['user']
 
+# class CustomLogEntry(admin.ModelAdmin):
+#     model = LogEntry
+@admin.register(LogEntry)
+class CustomLogEntryAdmin(admin.ModelAdmin):
+    # to have a date-based drilldown navigation in the admin page
+    date_hierarchy = 'action_time'
+
+    # to filter the resultes by users, content types and action flags
+    list_filter = [
+        'user',
+        'action_flag'
+    ]
+
+    # when searching the user will be able to search in both object_repr and change_message
+    search_fields = [
+        'object_repr',
+        'change_message'
+    ]
+
+    list_display = [
+        'action_time',
+        'user',
+        'content_type',
+        'action_flag',
+    ]
+class CustomTesting(admin.ModelAdmin):
+    model = Testing
+    list_display = [
+        'name',
+        'published',
+    ]
+
+    list_filter = [
+        'user_fk',
+        'date',
+        'published',
+        'country',
+    ]
+
+
 admin.site.register(User ,CustomUserAdmin)
 admin.site.register(Post,CustomPostAdmin)
 admin.site.register(Category,CustomCategoryAdmin)
 admin.site.register(Tag,CustomTagAdmin)
 admin.site.register(Comment,CustomCommentAdmin)
 admin.site.register(UserLoginLogout,CustomLoginLogoutAdmin)
+admin.site.register(Testing,CustomTesting)
 
 

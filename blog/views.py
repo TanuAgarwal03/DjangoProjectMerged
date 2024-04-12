@@ -189,3 +189,29 @@ def tag_details(request, tag_title):
 def index(request):
     return render(request, 'polls/index.html')
 
+def test_add(request):
+    print("Accessed test_add")
+    if request.method == 'POST':
+        form = TestingForm(request.POST,request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('blog:post_list')
+    else:
+        form = TestingForm()
+    return render(request, 'blog/test_add.html', {'form': form})
+    
+
+
+#  if request.method == "POST":
+#         form = PostForm(request.POST,request.FILES)
+#         print(form.is_valid(),form)
+#         if form.is_valid():
+#             post = form.save(commit=False)
+#             post.author = request.user
+#             post.published_date = timezone.now()
+#             post.save()
+#             form.save_m2m()
+#             return redirect('blog:post_detail', slug= post.slug)
+#     else:
+#         form = PostForm()
+#     return render(request, 'blog/post_edit.html', {'form': form,'page':'New'})

@@ -43,4 +43,12 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ("name","body")
 
-
+class TestingForm(forms.ModelForm):
+    class Meta:
+        model = Testing
+        fields = '__all__'
+        widgets ={
+            'date': forms.widgets.DateInput(attrs={'type': 'date'}),
+            'time': forms.widgets.TimeInput(attrs={'type': 'time'}),
+            'published' : forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }

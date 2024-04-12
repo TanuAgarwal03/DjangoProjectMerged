@@ -7,6 +7,10 @@ from django.urls import reverse
 from django.db import models
 from autoslug import AutoSlugField
 
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
+
 # from .models import Post
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
@@ -238,10 +242,23 @@ class UserLoginLogout(models.Model):
     login_time = models.DateTimeField()
     logout_time = models.DateTimeField(null = True , blank= True)
 
-
-
-
-
-
-
-
+class Testing(models.Model):
+    user_fk = models.ForeignKey(User, on_delete=models.CASCADE, related_name='testing_user_fk')
+    user_oto = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='testing_user_oto')
+    user_m2m = models.ManyToManyField(User, related_name='testing_user_m2m')
+    name = models.CharField(max_length=20, blank= False)
+    slug = AutoSlugField(populate_from ='name' , unique = True, null = True , default=None)
+    image = models.ImageField(upload_to='testing/' , default=None)
+    file = models.FileField(upload_to='testing_files/' , null=True , default=None)
+    about = models.CharField(max_length=200)
+    date = models.DateField()
+    time = models.TimeField()
+    published = models.DateTimeField(null= True)
+    email = models.EmailField(null = True, max_length= 254)
+    url = models.URLField(max_length=200, null = True)
+    pin = models.PositiveIntegerField(default=None)
+    verify = models.BooleanField(null= True , default=True)
+    state = models.CharField(max_length =20 , null= True)
+    country = models.CharField(max_length =20 , null= True)
+    latitude = models.FloatField(max_length=20 , null= True)
+    longitude = models.FloatField(max_length=20 , null= True)

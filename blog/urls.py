@@ -22,6 +22,7 @@ urlpatterns = [
     path('success/', views.uploadok, name= 'success'),
     path('edit_profile/' ,views.edit_profile,name='edit_profile'),
     path('user<str:username>/' ,views.user_detail,name='user_detail'),
+    path('test_add/' , views.test_add , name="test_add"),
     path('', views.post_list, name='post_list'),
 
     # path('text-to-speech/<int:post_id>/', generate_speech_view, name='generate_speech'),
