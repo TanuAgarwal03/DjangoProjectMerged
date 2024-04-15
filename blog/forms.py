@@ -52,3 +52,6 @@ class TestingForm(forms.ModelForm):
             'time': forms.widgets.TimeInput(attrs={'type': 'time'}),
             'published' : forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
+
+class BulkPostUploadForm(forms.Form):
+    excel_file = forms.FileField()

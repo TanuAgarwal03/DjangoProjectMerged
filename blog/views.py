@@ -10,6 +10,8 @@ from django.urls import reverse
 from .forms import *
 from .models import *
 
+import pandas as pd
+
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
 from gtts import gTTS
@@ -199,19 +201,143 @@ def test_add(request):
     else:
         form = TestingForm()
     return render(request, 'blog/test_add.html', {'form': form})
-    
+
+def bulk_post_upload(request):
+    if request.method == 'POST':
+
+        form = BulkPostUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            excel_file= request.FILES['excel_file']
+            df = pd.read_excel(excel_file)
+            # print(excel_file)
+
+            # print(single_row)
+            # for row in list1:
+            #     for entry in row:
+            #         print(entry)
+
+            html_filename = "blog/templates/blog/excel_to_html.html"
+            # html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
+            html_content = '<table border="1">\n'
+            html_content += '<thead>\n<tr>\n'
+            for column in df.columns:
+                html_content += f'<th>{column}</th>\n'
+            html_content += '</tr>\n</thead>\n'
+            
+            html_content += '<tbody>\n'
+            for i, row in enumerate(df.itertuples(), start=1):
+                html_content += f'<tr id="row_{i}" name="row_{i}">\n'
+                for value in row[1:]:  # Exclude the index
+                    html_content += f'<td>{value}</td>\n'
+                html_content += '</tr>\n'
+            html_content += '</tbody>\n'
+            html_content += '</table>\n'
+            html_content += '<input type="submit" value="Submit" class = "btn btn-primary">'
+            html_content = f'<form method="post" enctype="multipart/form-data">{html_content}</form>'
+            
+            with open(html_filename, 'w') as f:
+                f.write(html_content)
+            
+            
+
+            # for _, row in df.iterrows():
+            #     instance = BulkPostUploadForm(excel_file=row['column1'])  
+            #     instance.save()
+
+            # form.save()
+            return render(request, "blog/excel_to_html.html")
+    else:
+        form = BulkPostUploadForm()
+    return render(request , 'blog/bulk_post_upload.html' , {'form' : form})
 
 
-#  if request.method == "POST":
-#         form = PostForm(request.POST,request.FILES)
-#         print(form.is_valid(),form)
+
+
+
+
+
+
+
+
+
+
+        # fields =request.FILES.getlist('excel_files')
+        # for field in fields:
+        #     field_ins = BulkPostUploadForm(excel_file = field)
+        #     field_ins.save()
+        # return redirect('blog:post_list')
+
+
+
+
+
+
+
+
+# def bulk_post_upload(request):
+#     if request.method == 'POST':
+#         form = BulkPostUploadForm(request.POST, request.FILES)
 #         if form.is_valid():
-#             post = form.save(commit=False)
-#             post.author = request.user
-#             post.published_date = timezone.now()
-#             post.save()
-#             form.save_m2m()
-#             return redirect('blog:post_detail', slug= post.slug)
+#             excel_file = request.FILES['excel_file']
+#             df = pd.read_excel(excel_file)
+#             html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
+#             # Enclose HTML content in a form element
+#             html_content = f'<form method="post" enctype="multipart/form-data">{html_content}</form>'
+#             return render(request, "blog/excel_to_html.html", {'html_content': html_content})
 #     else:
-#         form = PostForm()
-#     return render(request, 'blog/post_edit.html', {'form': form,'page':'New'})
+#         form = BulkPostUploadForm()
+#         html_content = None
+#     return render(request , 'blog/bulk_post_upload.html' , {'form' : form, 'html_content': html_content})
+
+# def bulk_post_upload(request):
+#     if request.method == 'POST':
+#         form = BulkPostUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             excel_file = request.FILES['excel_file']
+#             df = pd.read_excel(excel_file)
+#             html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
+#             return render(request, "blog/bulk_post_upload.html", {'form': form, 'html_content': html_content})
+#     else:
+#         form = BulkPostUploadForm()
+#         html_content = None
+#     return render(request , 'blog/bulk_post_upload.html' , {'form' : form, 'html_content': html_content})
+
+#             columns = df.columns.tolist()
+#             list1 = df.values.tolist()
+#             # print(list1)
+#  # Change this to the index of the row you want to access
+#             single_row = list1[1]
+
+#            
+# for _, row in df.iterrows():
+#                 tag_names = [tag.strip() for tag in row['tags'].split(',')]
+#                 tags = [Tag.objects.get_or_create(name=tag)[0] for tag in tag_names]
+#                 category_name = row['category']
+#                 category, created = Category.objects.get_or_create(title=category_name)
+#                 post = Post.objects.create(
+#                     title=row['title'],
+#                     text=row['text'],
+#                     author=request.user,
+#                     published_date=row['published_date'],
+#                     image=row['image'],
+#                     feature_img= row['feature_img'],
+#                     post_cat=category
+#                 )
+#                 post.tags.add(*tags)
+# def save_data(request):
+#     if request.method == 'POST':
+#         # Process and save the data to the database
+#         excel_file = request.FILES['excel_file']
+#         df = pd.read_excel(excel_file)
+
+#         # Iterate over the DataFrame rows
+#         for _, row in df.iterrows():
+#             # Create an instance of YourModelName and populate it with data from the DataFrame
+#             instance = TestingForm()
+#             # Save the instance to the database
+#             instance.save()
+
+#         return redirect('blog:post_list')
+#     else:
+#         return HttpResponse("Method Not Allowed", status=405)
+
