@@ -10,6 +10,11 @@ from django.urls import reverse
 from .forms import *
 from .models import *
 
+from datetime import datetime
+from django.utils.timezone import make_aware
+from django.contrib import messages
+from django.utils.text import slugify
+from django.db import IntegrityError
 import pandas as pd
 
 from django.views.decorators.csrf import csrf_exempt
@@ -209,12 +214,6 @@ def bulk_post_upload(request):
         if form.is_valid():
             excel_file= request.FILES['excel_file']
             df = pd.read_excel(excel_file)
-            # print(excel_file)
-
-            # print(single_row)
-            # for row in list1:
-            #     for entry in row:
-            #         print(entry)
 
             html_filename = "blog/templates/blog/excel_to_html.html"
             # html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
@@ -236,108 +235,129 @@ def bulk_post_upload(request):
             html_content = f'<form method="post" enctype="multipart/form-data">{html_content}</form>'
             
             with open(html_filename, 'w') as f:
-                f.write(html_content)
-            
-            
+                f.write(html_content)            
 
-            # for _, row in df.iterrows():
-            #     instance = BulkPostUploadForm(excel_file=row['column1'])  
-            #     instance.save()
+            for index, row in df.iterrows():
 
-            # form.save()
-            return render(request, "blog/excel_to_html.html")
+                try:
+                    # user_fk_instance = User.objects.filter(username=row['user_fk']).last()
+                    # if not user_fk_instance:
+                    #     user_fk_instance = User.objects.create(username=row['user_fk'])
+
+                    # user_oto_instance = User.objects.filter(username=row['user_oto']).last()
+                    # if not user_oto_instance:
+                    #     # If user_oto does not exist, raise an exception to handle it later
+                    #     raise Exception(f"User with username '{row['user_oto']}' does not exist")
+
+
+                    user_fk_instance, created_fk = User.objects.get_or_create(username=row['user_fk'])
+                    user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
+                    if Testing.objects.filter(user_oto=user_oto_instance).exists():
+                        raise Exception(f"Testing instance with user_oto '{row['user_oto']}' already exists")
+
+                    # try:
+                    #     user_oto_instance = User.objects.get(username=row['user_oto'])
+                    # except User.DoesNotExist:
+                    #     user_oto_instance = User.objects.create(username=row['user_oto'])
+                    # # user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
+
+                    slug = slugify(row['name'])
+                    counter = 1
+                    while Testing.objects.filter(slug=slug).exists():
+                        slug = f"{slug}-{counter}"
+                        counter += 1
+
+                    date_value = row['date']
+                    time_value = row['time']
+                    if pd.notnull(date_value) and pd.notnull(time_value):
+                        date_time = make_aware(datetime.combine(date_value, time_value))
+                    else:
+                        date_time = None
+
+                
+                    # user_id = row['user_oto']
+                    # if Testing.objects.filter(user_oto_id = user_id).exists():
+                    #     print(f"Skipping row {index + 1}: User ID '{user_id}' already exists.")
+                    # else:
+                    testing_instance = Testing.objects.create(
+                        user_fk=user_fk_instance,
+                        user_oto=user_oto_instance,
+                        name=row['name'],
+                        slug=slug,
+                        image=row['image'],
+                        file=row['file'],
+                        about=row['about'],
+                        date=row['date'],
+                        time=row['time'],
+                        published=row['published'],
+                        email=row['email'],
+                        url=row['url'],
+                        pin=row['pin'],
+                        verify=row['verify'],
+                        state=row['state'],
+                        country=row['country'],
+                        latitude=row['latitude'],
+                        longitude=row['longitude'],
+                        # user_oto_id = user_id
+                    )
+                except IntegrityError as e:
+                    messages.warning(request, f"Skipping row {index+1}: {str(e)}")
+                    continue  # Move to the next row
+                except Exception as e:
+                    messages.error(request, f"Error occurred while saving data for row {index+1}: {str(e)}")
+                    continue  # Move to the next row
+            
+            print("Success")
+
+            messages.success(request, "Data uploaded successfully!")
+            
+            return redirect('blog:post_list')
+        
     else:
         form = BulkPostUploadForm()
-    return render(request , 'blog/bulk_post_upload.html' , {'form' : form})
+    testing_instances = Testing.objects.all()
+    return render(request , 'blog/bulk_post_upload.html' , {'form' : form,'testing_instances': testing_instances})
 
 
 
 
+  
+        
+        # for testing_instance in testing_instances:
+
+            # for _, row in df.iterrows():
+            #     try:
+            #         slug = slugify(row['name'])
+            #         user_fk_instance, created_fk = User.objects.get_or_create(username=row['user_fk'])
+            #         user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
+
+            #         testing_instance = Testing.objects.create(
+            #             user_fk=user_fk_instance,
+            #             user_oto=user_oto_instance,
+            #             name=row['name'],
+            #             slug=slug,
+            #             image=row['image'],
+            #             file=row['file'],
+            #             about=row['about'],
+            #             date=row['date'],
+            #             time=row['time'],
+            #             published=row['published'],
+            #             email=row['email'],
+            #             url=row['url'],
+            #             pin=row['pin'],
+            #             verify=row['verify'],
+            #             state=row['state'],
+            #             country=row['country'],
+            #             latitude=row['latitude'],
+            #             longitude=row['longitude']
+            #         )
+
+            #     except IntegrityError as e:
+            #         print(f"IntegrityError: {e}")
+
+            # # return redirect('blog:post_list')
+
+            # return render(request, "blog/excel_to_html.html")
 
 
-
-
-
-
-
-
-        # fields =request.FILES.getlist('excel_files')
-        # for field in fields:
-        #     field_ins = BulkPostUploadForm(excel_file = field)
-        #     field_ins.save()
-        # return redirect('blog:post_list')
-
-
-
-
-
-
-
-
-# def bulk_post_upload(request):
-#     if request.method == 'POST':
-#         form = BulkPostUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             excel_file = request.FILES['excel_file']
-#             df = pd.read_excel(excel_file)
-#             html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
-#             # Enclose HTML content in a form element
-#             html_content = f'<form method="post" enctype="multipart/form-data">{html_content}</form>'
-#             return render(request, "blog/excel_to_html.html", {'html_content': html_content})
-#     else:
-#         form = BulkPostUploadForm()
-#         html_content = None
-#     return render(request , 'blog/bulk_post_upload.html' , {'form' : form, 'html_content': html_content})
-
-# def bulk_post_upload(request):
-#     if request.method == 'POST':
-#         form = BulkPostUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             excel_file = request.FILES['excel_file']
-#             df = pd.read_excel(excel_file)
-#             html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
-#             return render(request, "blog/bulk_post_upload.html", {'form': form, 'html_content': html_content})
-#     else:
-#         form = BulkPostUploadForm()
-#         html_content = None
-#     return render(request , 'blog/bulk_post_upload.html' , {'form' : form, 'html_content': html_content})
-
-#             columns = df.columns.tolist()
-#             list1 = df.values.tolist()
-#             # print(list1)
-#  # Change this to the index of the row you want to access
-#             single_row = list1[1]
-
-#            
-# for _, row in df.iterrows():
-#                 tag_names = [tag.strip() for tag in row['tags'].split(',')]
-#                 tags = [Tag.objects.get_or_create(name=tag)[0] for tag in tag_names]
-#                 category_name = row['category']
-#                 category, created = Category.objects.get_or_create(title=category_name)
-#                 post = Post.objects.create(
-#                     title=row['title'],
-#                     text=row['text'],
-#                     author=request.user,
-#                     published_date=row['published_date'],
-#                     image=row['image'],
-#                     feature_img= row['feature_img'],
-#                     post_cat=category
-#                 )
-#                 post.tags.add(*tags)
-# def save_data(request):
-#     if request.method == 'POST':
-#         # Process and save the data to the database
-#         excel_file = request.FILES['excel_file']
-#         df = pd.read_excel(excel_file)
-
-#         # Iterate over the DataFrame rows
-#         for _, row in df.iterrows():
-#             # Create an instance of YourModelName and populate it with data from the DataFrame
-#             instance = TestingForm()
-#             # Save the instance to the database
-#             instance.save()
-
-#         return redirect('blog:post_list')
-#     else:
-#         return HttpResponse("Method Not Allowed", status=405)
-
+# 2012-09-04 06:00:00.000000-08:00

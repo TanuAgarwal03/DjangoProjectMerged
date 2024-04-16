@@ -244,7 +244,7 @@ class UserLoginLogout(models.Model):
 
 class Testing(models.Model):
     user_fk = models.ForeignKey(User, on_delete=models.CASCADE, related_name='testing_user_fk')
-    user_oto = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='testing_user_oto')
+    user_oto = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='testing_user_oto', unique=True)
     user_m2m = models.ManyToManyField(User, related_name='testing_user_m2m')
     name = models.CharField(max_length=20, blank= False)
     slug = AutoSlugField(populate_from ='name' , unique = True, null = True , default=None)
@@ -262,3 +262,6 @@ class Testing(models.Model):
     country = models.CharField(max_length =20 , null= True)
     latitude = models.FloatField(max_length=20 , null= True)
     longitude = models.FloatField(max_length=20 , null= True)
+
+    def __str__(self):
+        return self.user_oto.username

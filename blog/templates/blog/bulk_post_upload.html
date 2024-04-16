@@ -4,7 +4,43 @@
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class ="btn btn-primary">Upload File</button>
+    <button type="submit" class ="btn btn-primary" onclick="extractAndDisplayData()">Upload File</button>
 </form>
+
+<!-- <script>
+    // Function to extract data from table and display it
+    function extractAndDisplayData() {
+        // Extract data from the table
+        var tableData = extractDataFromTable();
+
+        // Display the extracted data (you can modify this part as needed)
+        console.log(tableData);
+        alert('Data extracted: ' + JSON.stringify(tableData));
+    }
+
+    // Function to extract data from table and convert it into a list
+    function extractDataFromTable() {
+        var table = document.getElementById('myTable');
+        var data = [];
+
+        // Iterate over rows
+        for (var i = 0; i < table.rows.length; i++) {
+            var row = table.rows[i];
+            var rowData = [];
+
+            // Iterate over cells in the row
+            for (var j = 0; j < row.cells.length; j++) {
+                var cell = row.cells[j];
+                rowData.push(cell.innerText);
+            }
+
+            // Add row data to the list
+            data.push(rowData);
+        }
+
+        return data;
+    }
+</script> -->
+
 {% endblock %}
 
