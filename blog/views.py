@@ -208,21 +208,24 @@ def test_add(request):
     return render(request, 'blog/test_add.html', {'form': form})
 
 def bulk_post_upload(request):
+    html_content = ''  # Initialize html_content variable here
+    
     if request.method == 'POST':
-
         form = BulkPostUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            excel_file= request.FILES['excel_file']
+            excel_file = request.FILES['excel_file']
             df = pd.read_excel(excel_file)
 
             html_filename = "blog/templates/blog/excel_to_html.html"
-            # html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
-            html_content = '<table border="1">\n'
+            
+            html_content += '<form method="post" action="{% url "blog:post_list" %}" enctype="multipart/form-data">{% csrf_token %}'
+
+            html_content += '<table border="1">\n'
             html_content += '<thead>\n<tr>\n'
             for column in df.columns:
                 html_content += f'<th>{column}</th>\n'
             html_content += '</tr>\n</thead>\n'
-            
+
             html_content += '<tbody>\n'
             for i, row in enumerate(df.itertuples(), start=1):
                 html_content += f'<tr id="row_{i}" name="row_{i}">\n'
@@ -231,35 +234,19 @@ def bulk_post_upload(request):
                 html_content += '</tr>\n'
             html_content += '</tbody>\n'
             html_content += '</table>\n'
-            html_content += '<input type="submit" value="Submit" class = "btn btn-primary">'
-            html_content = f'<form method="post" enctype="multipart/form-data">{html_content}</form>'
-            
+
+            html_content += '<button type="submit" class=" btn btn-primary" name="btn_submit">SUBMIT FILE</button>'
+            html_content += '</form>'
+
             with open(html_filename, 'w') as f:
                 f.write(html_content)            
 
             for index, row in df.iterrows():
-
                 try:
-                    # user_fk_instance = User.objects.filter(username=row['user_fk']).last()
-                    # if not user_fk_instance:
-                    #     user_fk_instance = User.objects.create(username=row['user_fk'])
-
-                    # user_oto_instance = User.objects.filter(username=row['user_oto']).last()
-                    # if not user_oto_instance:
-                    #     # If user_oto does not exist, raise an exception to handle it later
-                    #     raise Exception(f"User with username '{row['user_oto']}' does not exist")
-
-
                     user_fk_instance, created_fk = User.objects.get_or_create(username=row['user_fk'])
                     user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
                     if Testing.objects.filter(user_oto=user_oto_instance).exists():
                         raise Exception(f"Testing instance with user_oto '{row['user_oto']}' already exists")
-
-                    # try:
-                    #     user_oto_instance = User.objects.get(username=row['user_oto'])
-                    # except User.DoesNotExist:
-                    #     user_oto_instance = User.objects.create(username=row['user_oto'])
-                    # # user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
 
                     slug = slugify(row['name'])
                     counter = 1
@@ -274,11 +261,6 @@ def bulk_post_upload(request):
                     else:
                         date_time = None
 
-                
-                    # user_id = row['user_oto']
-                    # if Testing.objects.filter(user_oto_id = user_id).exists():
-                    #     print(f"Skipping row {index + 1}: User ID '{user_id}' already exists.")
-                    # else:
                     testing_instance = Testing.objects.create(
                         user_fk=user_fk_instance,
                         user_oto=user_oto_instance,
@@ -298,20 +280,19 @@ def bulk_post_upload(request):
                         country=row['country'],
                         latitude=row['latitude'],
                         longitude=row['longitude'],
-                        # user_oto_id = user_id
                     )
                 except IntegrityError as e:
                     messages.warning(request, f"Skipping row {index+1}: {str(e)}")
-                    continue  # Move to the next row
+                    continue 
                 except Exception as e:
                     messages.error(request, f"Error occurred while saving data for row {index+1}: {str(e)}")
-                    continue  # Move to the next row
+                    continue  
             
             print("Success")
 
             messages.success(request, "Data uploaded successfully!")
             
-            return redirect('blog:post_list')
+            return render(request, "blog/excel_to_html.html")
         
     else:
         form = BulkPostUploadForm()
@@ -319,45 +300,194 @@ def bulk_post_upload(request):
     return render(request , 'blog/bulk_post_upload.html' , {'form' : form,'testing_instances': testing_instances})
 
 
+# def bulk_post_upload(request):
+#     if request.method == 'POST':
 
+#         form = BulkPostUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             excel_file= request.FILES['excel_file']
+#             df = pd.read_excel(excel_file)
 
-  
+#             html_filename = "blog/templates/blog/excel_to_html.html"
+            
+#             html_content += '<form method="post" action="{% url "post_list" %}" enctype="multipart/form-data">{% csrf_token %}'
+
+#             html_content += '<table border="1">\n'
+#             html_content += '<thead>\n<tr>\n'
+#             for column in df.columns:
+#                 html_content += f'<th>{column}</th>\n'
+#             html_content += '</tr>\n</thead>\n'
+
+#             html_content += '<tbody>\n'
+#             for i, row in enumerate(df.itertuples(), start=1):
+#                 html_content += f'<tr id="row_{i}" name="row_{i}">\n'
+#                 for value in row[1:]:  # Exclude the index
+#                     html_content += f'<td>{value}</td>\n'
+#                 html_content += '</tr>\n'
+#             html_content += '</tbody>\n'
+#             html_content += '</table>\n'
+
+#             html_content += '<button type="submit" class=" btn btn-primary" name="btn_submit">SUBMIT FILE</button>'
+#             html_content += '</form>'
+
+#             with open(html_filename, 'w') as f:
+#                 f.write(html_content)            
+
+#             for index, row in df.iterrows():
+
+#                 try:
+#                     user_fk_instance, created_fk = User.objects.get_or_create(username=row['user_fk'])
+#                     user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
+#                     if Testing.objects.filter(user_oto=user_oto_instance).exists():
+#                         raise Exception(f"Testing instance with user_oto '{row['user_oto']}' already exists")
+
+#                     slug = slugify(row['name'])
+#                     counter = 1
+#                     while Testing.objects.filter(slug=slug).exists():
+#                         slug = f"{slug}-{counter}"
+#                         counter += 1
+
+#                     date_value = row['date']
+#                     time_value = row['time']
+#                     if pd.notnull(date_value) and pd.notnull(time_value):
+#                         date_time = make_aware(datetime.combine(date_value, time_value))
+#                     else:
+#                         date_time = None
+
+#                     testing_instance = Testing.objects.create(
+#                         user_fk=user_fk_instance,
+#                         user_oto=user_oto_instance,
+#                         name=row['name'],
+#                         slug=slug,
+#                         image=row['image'],
+#                         file=row['file'],
+#                         about=row['about'],
+#                         date=row['date'],
+#                         time=row['time'],
+#                         published=row['published'],
+#                         email=row['email'],
+#                         url=row['url'],
+#                         pin=row['pin'],
+#                         verify=row['verify'],
+#                         state=row['state'],
+#                         country=row['country'],
+#                         latitude=row['latitude'],
+#                         longitude=row['longitude'],
+#                     )
+#                 except IntegrityError as e:
+#                     messages.warning(request, f"Skipping row {index+1}: {str(e)}")
+#                     continue 
+#                 except Exception as e:
+#                     messages.error(request, f"Error occurred while saving data for row {index+1}: {str(e)}")
+#                     continue  
+            
+#             print("Success")
+
+#             messages.success(request, "Data uploaded successfully!")
+            
+#             return render(request, "blog/excel_to_html.html")
         
-        # for testing_instance in testing_instances:
-
-            # for _, row in df.iterrows():
-            #     try:
-            #         slug = slugify(row['name'])
-            #         user_fk_instance, created_fk = User.objects.get_or_create(username=row['user_fk'])
-            #         user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
-
-            #         testing_instance = Testing.objects.create(
-            #             user_fk=user_fk_instance,
-            #             user_oto=user_oto_instance,
-            #             name=row['name'],
-            #             slug=slug,
-            #             image=row['image'],
-            #             file=row['file'],
-            #             about=row['about'],
-            #             date=row['date'],
-            #             time=row['time'],
-            #             published=row['published'],
-            #             email=row['email'],
-            #             url=row['url'],
-            #             pin=row['pin'],
-            #             verify=row['verify'],
-            #             state=row['state'],
-            #             country=row['country'],
-            #             latitude=row['latitude'],
-            #             longitude=row['longitude']
-            #         )
-
-            #     except IntegrityError as e:
-            #         print(f"IntegrityError: {e}")
-
-            # # return redirect('blog:post_list')
-
-            # return render(request, "blog/excel_to_html.html")
+#     else:
+#         form = BulkPostUploadForm()
+#     testing_instances = Testing.objects.all()
+#     return render(request , 'blog/bulk_post_upload.html' , {'form' : form,'testing_instances': testing_instances})
 
 
-# 2012-09-04 06:00:00.000000-08:00
+# html_content = df.to_html(index=False, classes='table', header='true', border=1, justify='left')
+            # html_content = '<table border="1">\n'
+            # html_content += '<thead>\n<tr>\n'
+            # for column in df.columns:
+            #     html_content += f'<th>{column}</th>\n'
+            # html_content += '</tr>\n</thead>\n'
+            
+            # html_content += '<tbody>\n'
+            # for i, row in enumerate(df.itertuples(), start=1):
+            #     html_content += f'<tr id="row_{i}" name="row_{i}">\n'
+            #     for value in row[1:]:  # Exclude the index
+            #         html_content += f'<td>{value}</td>\n'
+            #     html_content += '</tr>\n'
+            # html_content += '</tbody>\n'
+            # html_content += '</table>\n'
+            # html_content += '<button type="submit" class=" btn btn-primary" name="btn_submit">SUBMIT FILE</button>'
+            
+            # html_content += '<form method="post" enctype="multipart/form-data">{% csrf_token %}</form>'
+            # html_content += f'{html_content}</form>'  
+
+
+            # html_content = '<form method="post" action="{% url 'post_list' %}" enctype="multipart/form-data">{% csrf_token %}'
+            # Update the form action to point to the post_list view
+
+
+
+# def save_html_data_to_testing_model(df):
+#     for index, row in df.iterrows():
+#         try:
+#             user_fk_instance, created_fk = User.objects.get_or_create(username=row['user_fk'])
+#             user_oto_instance, created_oto = User.objects.get_or_create(username=row['user_oto'])
+#             if Testing.objects.filter(user_oto=user_oto_instance).exists():
+#                 raise Exception(f"Testing instance with user_oto '{row['user_oto']}' already exists")
+
+#             slug = slugify(row['name'])
+#             counter = 1
+#             while Testing.objects.filter(slug=slug).exists():
+#                 slug = f"{slug}-{counter}"
+#                 counter += 1
+
+#             date_value = row['date']
+#             time_value = row['time']
+#             if pd.notnull(date_value) and pd.notnull(time_value):
+#                 date_time = make_aware(datetime.combine(date_value, time_value))
+#             else:
+#                 date_time = None
+
+#             testing_instance = Testing.objects.create(
+#                 user_fk=user_fk_instance,
+#                 user_oto=user_oto_instance,
+#                 name=row['name'],
+#                 slug=slug,
+#                 image=row['image'],
+#                 file=row['file'],
+#                 about=row['about'],
+#                 date=row['date'],
+#                 time=row['time'],
+#                 published=row['published'],
+#                 email=row['email'],
+#                 url=row['url'],
+#                 pin=row['pin'],
+#                 verify=row['verify'],
+#                 state=row['state'],
+#                 country=row['country'],
+#                 latitude=row['latitude'],
+#                 longitude=row['longitude'],
+#             )
+#         except IntegrityError as e:
+#             messages.warning(request, f"Skipping row {index+1}: {str(e)}")
+#             continue 
+#         except Exception as e:
+#             messages.error(request, f"Error occurred while saving data for row {index+1}: {str(e)}")
+#             continue  
+#     print("Success")
+
+
+# def bulk_post_upload(request):
+#     if request.method == 'POST':
+#         form = BulkPostUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             excel_file = request.FILES['excel_file']
+#             df = pd.read_excel(excel_file)
+
+#             # Save HTML content to file
+#             html_filename = "blog/templates/blog/excel_to_html.html"
+#             html_content = generate_html_content(df)
+#             with open(html_filename, 'w') as f:
+#                 f.write(html_content)
+
+#             # Save HTML data to Testing model
+#             save_html_data_to_testing_model(df)
+
+#             messages.success(request, "Data uploaded successfully!")
+#             return render(request, "blog/excel_to_html.html")
+#     else:
+#         form = BulkPostUploadForm()
+#     testing_instances = Testing.objects.all()
+#     return render(request, 'blog/bulk_post_upload.html', {'form': form, 'testing_instances': testing_instances})        

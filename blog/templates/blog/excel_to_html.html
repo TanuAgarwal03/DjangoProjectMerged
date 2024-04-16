@@ -1,4 +1,4 @@
-<form method="post" enctype="multipart/form-data"><table border="1">
+<form method="post" action="{% url "blog:post_list" %}" enctype="multipart/form-data">{% csrf_token %}<table border="1">
 <thead>
 <tr>
 <th>user_fk</th>
@@ -254,6 +254,48 @@
 <td>56.52</td>
 <td>58.47</td>
 </tr>
+<tr id="row_12" name="row_12">
+<td>user12</td>
+<td>user12</td>
+<td>user12</td>
+<td>test12</td>
+<td>ghi</td>
+<td>image2.jpg</td>
+<td>Account State.pdf</td>
+<td>testing12</td>
+<td>2024-04-16 00:00:00</td>
+<td>07:41:16</td>
+<td>2012-09-04 06:00:00.000000-08:00</td>
+<td>user12@gmail.com</td>
+<td>https://www.google.com</td>
+<td>545425</td>
+<td>0</td>
+<td>Rajasthan</td>
+<td>India</td>
+<td>54.454</td>
+<td>545.55</td>
+</tr>
+<tr id="row_13" name="row_13">
+<td>user13</td>
+<td>user13</td>
+<td>user2</td>
+<td>test13</td>
+<td>jjj</td>
+<td>image2.jpg</td>
+<td>Account State.pdf</td>
+<td>testing13</td>
+<td>2024-04-16 00:00:00</td>
+<td>07:41:16</td>
+<td>2012-09-04 06:00:00.000000-08:00</td>
+<td>user13@gmail.com</td>
+<td>https://www.google.com</td>
+<td>545425</td>
+<td>1</td>
+<td>Rajasthan</td>
+<td>India</td>
+<td>15.545</td>
+<td>15.15</td>
+</tr>
 </tbody>
 </table>
-<input type="submit" value="Submit" class = "btn btn-primary"></form>
+<button type="submit" class=" btn btn-primary" name="btn_submit">SUBMIT FILE</button></form>
