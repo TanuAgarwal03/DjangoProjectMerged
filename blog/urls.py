@@ -25,12 +25,6 @@ urlpatterns = [
     path('test_add/' , views.test_add , name="test_add"),
     path('', views.post_list, name='post_list'),
     path('bulk_post_upload/',views.bulk_post_upload, name='bulk_post_upload'),
-    # path('process-html-form/', views.process_html_form, name='process_html_form'),
-    # path('bulk_post_upload/',views.bulk_post_upload, name='bulk_post_upload'),
-
-
-    # path('text-to-speech/<int:post_id>/', generate_speech_view, name='generate_speech'),
-
     
 ]
 if settings.DEBUG:

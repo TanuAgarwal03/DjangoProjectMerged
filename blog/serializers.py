@@ -9,35 +9,19 @@ from django.utils.http import urlsafe_base64_decode
 
 class UserSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
-    password = serializers.CharField(style={'input_type': 'password'})
+    # password = serializers.CharField(style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'first_name', 'last_name' , 'email', 'gender' , 'country' , 'state' ,'dob' , 'image' ,'token','id' ,'last_login' ,'is_staff' , 'is_active', 'date_joined' , 'is_superuser'  ]
+        fields = ['username',  'first_name', 'last_name' , 'email', 'gender' , 'country' , 'state' ,'dob' , 'image' ,'token','id' ,'last_login' ,'is_staff' , 'is_active', 'date_joined' , 'is_superuser'  ]
         extra_kwargs = {
-            'password': {'write_only': True},
+            # 'password': {'write_only': True},
             'last_login': {'read_only': True},
             'is_staff': {'read_only': True},
             'is_active': {'read_only': True},
             'date_joined': {'read_only': True},
             'is_superuser': {'read_only': True},
         }
-    # def validate(self, data):
-    #     if data['password'] != data['confirm_password']:
-    #         raise serializers.ValidationError("The password and confirm password do not match.")
-    #     return data
-
-    # def create(self, validated_data):
-    #     validated_data.pop('confirm_password') 
-    #     user = User.objects.create_user(**validated_data)
-    #     return user
-    # def update(self, instance, validated_data):
-    #     # Update each field in the instance with the corresponding value in validated_data
-    #     for attr, value in validated_data.items():
-    #         setattr(instance, attr, value)
-    #     instance.save()
-    #     return instance
-    
     def get_token(self, obj):
         token, created = Token.objects.get_or_create(user=obj)
         return token.key
